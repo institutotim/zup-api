@@ -1,0 +1,275 @@
+[
+  {
+    "name": "reports_items",
+    "label": "Relatos",
+    "aggregates": [
+      {
+        "name": "reports_count",
+        "label": "Quantidade de Relatos",
+        "ref": "reports_count",
+        "function": "count"
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "created_at",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "year",
+            "label": "Ano",
+            "key": "year",
+            "label_attribute": "year",
+            "order_attribute": "year",
+            "attributes": [
+              {
+                "name": "year",
+                "label": "Ano",
+                "ref": "created_at.year"
+              }
+            ]
+          },
+          {
+            "name": "month",
+            "label": "Mês",
+            "key": "month",
+            "label_attribute": "month",
+            "order_attribute": "month",
+            "attributes": [
+              {
+                "name": "month",
+                "label": "Mês",
+                "ref": "created_at.month"
+              }
+            ]
+          },
+          {
+            "name": "day",
+            "label": "Dia",
+            "key": "day",
+            "label_attribute": "day",
+            "order_attribute": "day",
+            "attributes": [
+              {
+                "name": "day",
+                "label": "Dia",
+                "ref": "created_at.day"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "year",
+              "month",
+              "day"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "reports_category",
+        "label": "Categoria de Relato",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "reports_category",
+            "label": "Categoria de Relato",
+            "key": "id",
+            "label_attribute": "title",
+            "order_attribute": "id",
+            "attributes": [
+              {
+                "name": "id",
+                "ref": "reports_category.id"
+              },
+              {
+                "name": "title",
+                "ref": "reports_category.title"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "reports_category"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "reports_status",
+        "label": "Estado de relato",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "reports_status",
+            "label": "Estado de relato",
+            "key": "id",
+            "label_attribute": "title",
+            "order_attribute": "id",
+            "attributes": [
+              {
+                "name": "id",
+                "ref": "reports_status.id"
+              },
+              {
+                "name": "title",
+                "ref": "reports_status.title"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "reports_status"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "inventory_items",
+    "label": "Inventários",
+    "aggregates": [
+      {
+        "name": "inventory_count",
+        "label": "Quantidade de Items de Inventário",
+        "ref": "inventory_count",
+        "function": "count"
+      }
+    ],
+    "measures": [],
+    "dimensions": [
+      {
+        "name": "created_at",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "year",
+            "label": "Ano",
+            "key": "year",
+            "label_attribute": "year",
+            "order_attribute": "year",
+            "attributes": [
+              {
+                "name": "year",
+                "label": "Ano",
+                "ref": "created_at.year"
+              }
+            ]
+          },
+          {
+            "name": "month",
+            "label": "Mês",
+            "key": "month",
+            "label_attribute": "month",
+            "order_attribute": "month",
+            "attributes": [
+              {
+                "name": "month",
+                "label": "Mês",
+                "ref": "created_at.month"
+              }
+            ]
+          },
+          {
+            "name": "day",
+            "label": "Dia",
+            "key": "day",
+            "label_attribute": "day",
+            "order_attribute": "day",
+            "attributes": [
+              {
+                "name": "day",
+                "label": "Dia",
+                "ref": "created_at.day"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "year",
+              "month",
+              "day"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inventory_category",
+        "label": "Categoria de Inventário",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "inventory_category",
+            "label": "Categoria de Inventário",
+            "key": "id",
+            "label_attribute": "title",
+            "order_attribute": "id",
+            "attributes": [
+              {
+                "name": "id",
+                "ref": "inventory_category.id"
+              },
+              {
+                "name": "title",
+                "ref": "inventory_category.title"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "inventory_category"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inventory_status",
+        "label": "Estado de inventário",
+        "default_hierarchy_name": "default",
+        "levels": [
+          {
+            "name": "inventory_status",
+            "label": "Estado de inventário",
+            "key": "id",
+            "label_attribute": "title",
+            "order_attribute": "id",
+            "attributes": [
+              {
+                "name": "id",
+                "ref": "inventory_status.id"
+              },
+              {
+                "name": "title",
+                "ref": "inventory_status.title"
+              }
+            ]
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "default",
+            "levels": [
+              "inventory_status"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

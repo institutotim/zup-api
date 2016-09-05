@@ -1,0 +1,30 @@
+zup-api:
+  image: institutotim/zup-api
+  env_file:
+    - docker/api.env
+  volumes:
+    - /apps/zup/boa-vista/uploads:/usr/src/app/public/uploads
+    - /apps/zup/boa-vista/logs:/usr/src/app/log
+    - /apps/zup/boa-vista/config:/usr/src/app/config/permissions
+    - /apps/zup/boa-vista/shared_images:/usr/src/app/public/shared_images
+  ports:
+    - 8282:80
+  links:
+   - redis
+   - postgres
+zup-web:
+  image: institutotim/zup-web
+  env_file:
+    - docker/web.env
+  volumes:
+    - /apps/zup/boa-vista/logs/nginx:/var/log/nginx
+  ports:
+    - 9000:80
+postgres:
+  image: ntxcode/postgresql:9.4
+  env_file:
+    - docker/postgres.env
+  volumes:
+    - /apps/zup/boa-vista/postgres-data:/var/lib/postgresql/data
+redis:
+  image: redis:2.8

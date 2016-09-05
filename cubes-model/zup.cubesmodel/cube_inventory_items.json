@@ -1,0 +1,31 @@
+{
+    "name": "inventory_items",
+    "label": "Inventários",
+    "dimensions": [
+        "created_at",
+        "bi_inventory_fields",
+        "bi_inventory_fields_data",
+        "inventory_category",
+        "inventory_status",
+        "namespace",
+        "user"
+    ],
+    "aggregates": [
+      {
+        "name": "inventory_count",
+        "label": "Quantidade de Items de Inventário",
+        "function": "count",
+        "info": {
+          "cv-formatter": "value && value.toString()"
+        }
+      }
+    ],
+    "joins": [
+        { "master": "namespace_id", "alias": "namespace", "detail": "namespaces.id" },
+        { "master": "user_id", "name": "user" },
+        { "master": "inventory_status_id", "name": "inventory_status" },
+        { "master": "inventory_category_id", "name": "inventory_category" },
+        { "master": "bi_inventory_fields_data.inventory_field_id", "detail": "bi_inventory_fields.id"},
+        { "master": "id", "detail": "bi_inventory_fields_data.inventory_item_id" }
+    ]
+}

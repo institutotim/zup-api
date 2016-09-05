@@ -1,0 +1,6 @@
+{
+    "name": "reports_status",
+    "label": "Estado de relato",
+    "attributes": [{ "name": "id" }, { "name": "title" }],
+    "label_attribute": "title"
+}

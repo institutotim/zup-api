@@ -1,0 +1,13 @@
+{
+    "name": "bi_inventory_fields",
+    "label": "Campos",
+    "levels": [
+        {
+            "attributes": [{ "name": "id" }, { "name": "label" }],
+            "name": "field",
+            "key": "id",
+            "label": "Campo",
+            "label_attribute": "label"
+        }
+    ]
+}

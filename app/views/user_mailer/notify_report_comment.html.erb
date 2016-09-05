@@ -1,0 +1,15 @@
+<tr>
+  <td bgcolor="#ffffff" align="center" valign="top" style="padding:0 45px;">
+    <h1 style="color:#2DB0dC; font-weight:300; font-family:'Open Sans', Arial; text-align:center; margin:40px 0 0 0;"><%= greetings_for_email %></h1>
+    <h2 style="color:#000000; font-size:19px; font-weight:300; font-family:'Open Sans', Arial; text-align:center; margin:0 0 40px 0;"><%= greeting_message_for_email %></h2>
+  </td>
+</tr>
+
+<%= render partial: 'report', locals: { report: @report } %>
+
+<tr>
+  <td bgcolor="#f3f3f3" style="padding:30px 45px;" align="center" valign="top">
+    <span style="color:#444444; font-size:15px; line-height:19px; font-style:italic; font-weight:400; font-family:'Open Sans', Arial; margin:0 0 15px; display:block;"><%= @comment.message %></span>
+    <span style="color:#555555; font-size:13px; font-family:'Open Sans', Arial; margin:0; display:block;">Enviado por <%= @comment.author.name %>, <%= short_date_and_hour(@comment.created_at) %></span>
+  </td>
+</tr>

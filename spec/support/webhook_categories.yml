@@ -1,0 +1,13 @@
+---
+Solicitação/colocação de contêineres:
+- S
+- 100
+Manutenção, reposição ou lavagem de contêineres:
+- S
+- 101
+Retirada de contêineres/mudança de local:
+- S
+- 102
+Coleta de conteiner não executada / limpeza do local:
+- O
+- 103

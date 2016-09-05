@@ -1,0 +1,19 @@
+defaults: &defaults
+  email_notification:
+    all: true
+    report_created: true
+    report_changed_status: true
+    alerts: true
+  social_network_sharing: true
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+
+production:
+  <<: *defaults

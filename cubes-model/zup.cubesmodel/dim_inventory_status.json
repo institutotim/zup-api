@@ -1,0 +1,6 @@
+{
+  "name": "inventory_status",
+  "label": "Estado de inventário",
+  "attributes": [{ "name": "id" }, { "name": "title" }],
+  "label_attribute": "title"
+}

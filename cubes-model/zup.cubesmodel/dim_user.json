@@ -1,0 +1,6 @@
+{
+    "name": "user",
+    "label": "Usuário",
+    "attributes": [{ "name": "id" }, { "name": "email" }],
+    "label_attribute": "email"
+}

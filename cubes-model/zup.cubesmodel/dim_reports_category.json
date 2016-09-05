@@ -1,0 +1,6 @@
+{
+  "name": "reports_category",
+  "label": "Categoria de Relato",
+  "attributes": [{ "name": "id" }, { "name": "title" }],
+  "label_attribute": "title"
+}

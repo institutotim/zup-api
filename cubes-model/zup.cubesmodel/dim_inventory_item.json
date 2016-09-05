@@ -1,0 +1,5 @@
+{
+    "name": "inventory_item",
+    "label": "Item de inventário",
+    "attributes": ["id"]
+}

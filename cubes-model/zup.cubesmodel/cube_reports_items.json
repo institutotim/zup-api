@@ -1,0 +1,137 @@
+{
+  "name": "bi_reports_items",
+  "label": "Relatos",
+  "dimensions": [
+    "created_at",
+    "overdue_at",
+    "resolved_at",
+    "reports_category",
+    "reports_status",
+    "reports_perimeter",
+    "geographic",
+    "confidential",
+    "overdue",
+    "reporter",
+    "assigned_user",
+    "namespace",
+    "user",
+    {
+      "name": "group",
+      "alias": "assigned_group"
+    }
+  ],
+  "measures": [
+    {
+      "name": "comments_count",
+      "label": "Comentários",
+      "aggregates": ["avg"]
+    },
+    {
+      "name": "resolve_time_days",
+      "label": "Tempo de resolução (dias)",
+      "aggregates": ["avg"]
+    },
+    {
+      "name": "resolve_time_hours",
+      "label": "Tempo de resolução (horas)",
+      "aggregates": ["avg"]
+    },
+    {
+      "name": "overdue_time_days",
+      "label": "Tempo de atraso (dias)",
+      "aggregates": ["avg"]
+    },
+    {
+      "name": "overdue_time_hours",
+      "label": "Tempo de atraso (horas)",
+      "aggregates": ["avg"]
+    }
+  ],
+  "aggregates": [
+    {
+      "name": "report_count",
+      "label": "Quantidade de Relatos",
+      "function": "count",
+      "info": {
+        "cv-formatter": "value && value.toString()"
+      }
+    },
+    {
+      "name": "comments_avg",
+      "label": "Média de comentários",
+      "function": "avg",
+      "measure": "comments_count"
+    },
+    {
+      "name": "comments_sum",
+      "label": "Total de comentários",
+      "function": "sum",
+      "measure": "comments_count",
+      "info": {
+        "cv-formatter": "value && value.toString()"
+      }
+    },
+    {
+      "name": "avg_resolve_time_days",
+      "label": "Tempo de resolução médio (dias)",
+      "function": "avg",
+      "measure": "resolve_time_days"
+    },
+    {
+      "name": "avg_resolve_time_hours",
+      "label": "Tempo de resolução médio (horas)",
+      "function": "avg",
+      "measure": "resolve_time_hours"
+    },
+    {
+      "name": "avg_overdue_time_days",
+      "label": "Tempo de atraso médio (dias)",
+      "function": "avg",
+      "measure": "overdue_time_days"
+    },
+    {
+      "name": "avg_overdue_time_hours",
+      "label": "Tempo de atraso médio (horas)",
+      "function": "avg",
+      "measure": "overdue_time_hours"
+    }
+  ],
+  "joins": [
+    {
+      "master": "namespace_id",
+      "alias": "namespace",
+      "detail": "namespaces.id"
+    },
+    {
+      "master": "reports_category_id",
+      "name": "reports_category"
+    },
+    {
+      "master": "reports_status_id",
+      "name": "reports_status"
+    },
+    {
+      "master": "reports_perimeter_id",
+      "name": "reports_perimeter"
+    },
+    {
+      "master": "assigned_group_id",
+      "name": "group",
+      "alias": "assigned_group"
+    },
+    {
+      "master": "assigned_user_id",
+      "name": "user",
+      "alias": "assigned_user"
+    },
+    {
+      "master": "user_id",
+      "name": "user"
+    },
+    {
+      "master": "reporter_id",
+      "name": "user",
+      "alias": "reporter"
+    }
+  ]
+}

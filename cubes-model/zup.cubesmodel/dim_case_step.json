@@ -1,0 +1,13 @@
+{
+    "name": "case_step",
+    "label": "Última etapa executada",
+    "levels": [
+        {
+            "attributes": [{ "name": "id" }, { "name": "title" }],
+            "name": "title",
+            "key": "id",
+            "label": "Última etapa executada",
+            "label_attribute": "title"
+        }
+    ]
+}

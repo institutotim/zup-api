@@ -1,0 +1,6 @@
+{
+  "name": "inventory_category",
+  "label": "Categoria de Inventário",
+  "attributes": [{ "name": "id" }, { "name": "title" }],
+  "label_attribute": "title"
+}

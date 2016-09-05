@@ -1,0 +1,10 @@
+{
+    "name": "date",
+    "levels": [
+        { "name": "year" , "label": "Ano" },
+        { "name": "month", "label": "Mês" },
+        { "name": "day" , "label": "Dia" }
+    ],
+    "role": "time",
+    "default_hierarchy_name": "ymd"
+}

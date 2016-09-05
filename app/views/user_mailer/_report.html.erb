@@ -1,0 +1,64 @@
+<%# encoding: utf-8 %>
+
+<tr>
+  <td bgcolor="#FAFAFA" style="padding:30px 45px;" align="center" valign="top">
+    <h3 style="color:#9C9C9C; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:-0.5px; font-family:'Open Sans', Arial; margin:0;">Protocolo <%= report.protocol %></h3>
+
+    <hr style="border:0; color:#FFFFFF; border-bottom:1px solid #cfcfcf; margin:7px 0 14px 0;">
+
+
+    <%# History of statuses %>
+    <table align="center" border="0" cellpadding="0" cellspacing="9" width="386">
+      <% report.status_history.each do |history| %>
+        <% status = history.new_status %>
+
+        <tr>
+          <td bgcolor="<%= status.color %>" width="100" style="border-radius:20px; color:#FFF; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:-0.5px; font-family:'Open Sans', Arial; margin:0; padding:5px; text-align:center; width:120px;"><%= status.title %></td>
+          <td>
+            <b style="color:#656565; font-size:12px; font-weight:400; text-transform:uppercase; letter-spacing:-0.5px; font-family:'Open Sans', Arial; margin:0 0 0 15px;">Desde <%= short_date(history.created_at) %></b>
+          </td>
+        </tr>
+
+        <tr height="15"><td></td></tr>
+      <% end %>
+    </table>
+
+    <tr>
+      <td bgcolor="#f3f3f3" style="padding:15px 45px;" align="center" valign="top">
+        <table align="center" border="0" cellpadding="0" cellspacing="9" width="100%">
+
+          <tr height="5"><td></td></tr>
+
+          <tr>
+            <td>
+              <% if report.category.parent_category.present? %>
+                <h1 style="color:#242424; font-size:20px; font-weight:300; font-family:'Open Sans', Arial; line-height:26px; margin:0; padding:0;"><%= report.category.parent_category.title %></h1>
+                <h3 style="color:#3E3E3E; font-size:14px; font-weight:400; font-family:'Open Sans', Arial; line-height:24px; margin:0; padding:0;"><%= report.category.title %></h3>
+              <% else %>
+                <h1 style="color:#242424; font-size:20px; font-weight:300; font-family:'Open Sans', Arial; line-height:26px; margin:0; padding:0;"><%= report.category.title %></h1>
+              <% end %>
+            </td>
+          </tr>
+
+          <tr height="5"><td></td></tr>
+
+        </table>
+      </td>
+    </tr>
+
+    <% if report.images.any? || report.position.present?  %>
+    <tr>
+      <td bgcolor="#ffffff" style="padding:15px 45px;" align="center" valign="top">
+        <span style="color:#888888; font-size:14px; font-family:'Open Sans', Arial; padding:10px 0 0; margin:0; display:block;"><%= report.address %></span>
+        <span style="color:#666666; font-size:12px; font-family:'Open Sans', Arial; font-weight:700; text-transform:uppercase; margin:5px 0 0; display:block;"><%= long_date(report.created_at) %></span>
+        <% if report.images.any? %>
+            <%= image_tag(report.images.first.url, { width: 400, height: 400, style: 'margin:25px 0;' }) %>
+        <% else report.position.present? %>
+            <%= image_of_position(report, { width: 400, height: 400, style: 'margin:25px 0;' }) %>
+        <% end %>
+        <span style="color:#555555; font-size:14px; font-family:'Open Sans', Arial; margin:0 0 10px; display:block;"><%= report.description %></span>
+      </td>
+    </tr>
+    <% end %>
+  </td>
+</tr>

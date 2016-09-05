@@ -1,0 +1,37 @@
+{
+    "name": "bi_cases",
+    "label": "Casos",
+    "dimensions": [
+        "created_at",
+        "updated_at",
+        "reports_category",
+        "cases_created_by",
+        "cases_updated_by",
+        "cases_responsible_user",
+        "case_status",
+        "cases_resolution_status",
+        "namespace",
+        "flows",
+        "case_step"
+    ],
+    "aggregates": [
+      {
+        "name": "cases_count",
+        "label": "Quantidade de Casos",
+        "function": "count",
+        "info": {
+          "cv-formatter": "value && value.toString()"
+        }
+      }
+    ],
+    "joins": [
+        { "master": "namespace_id", "alias": "namespace", "detail": "namespaces.id" },
+        { "master": "initial_flow_id", "alias": "flows", "detail": "flows.id" },
+        { "master": "created_by_id", "alias": "cases_created_by", "detail": "users.id" },
+        { "master": "updated_by_id", "alias": "cases_updated_by", "detail": "users.id" },
+        { "master": "responsible_user", "alias": "cases_responsible_user", "detail": "users.id" },
+        { "master": "source_reports_category_id", "name": "reports_category", "detail": "reports_categories.id" },
+        { "master": "resolution_state_id", "alias": "cases_resolution_status", "detail": "resolution_states.id" },
+        { "master": "latest_executed_step_id", "detail": "steps.id", "alias": "case_step"}
+    ]
+}

@@ -1,0 +1,525 @@
+GIT
+  remote: git://github.com/alarionov/pushmeup.git
+  revision: fd43ba21ef3bbe8053f8878f9f800f7185b98156
+  ref: fd43ba21ef3bbe8053f8878f9f800f7185b98156
+  specs:
+    pushmeup (0.3.0)
+      httparty
+      json
+
+GIT
+  remote: git://github.com/estevaoam/rspec-nc.git
+  revision: 5753ddead0a935ed8beced21d96dcc31a8a820a2
+  specs:
+    rspec-nc (0.2.0)
+      rspec (~> 3.2)
+      terminal-notifier (~> 1.6.2)
+
+GIT
+  remote: git://github.com/intridea/grape-entity.git
+  revision: 48e5be7df9e362edc452332375e9397b12abdd45
+  ref: 48e5be7df9e362edc452332375e9397b12abdd45
+  specs:
+    grape-entity (0.4.6)
+      activesupport
+      multi_json (>= 1.3.2)
+
+GIT
+  remote: git://github.com/ntxcode/cubes.git
+  revision: 5a13480bf6f25d2ccf808eb1cc3fa314efbd683b
+  specs:
+    cubes (0.1.0)
+      faraday
+      net-http-persistent (~> 2.9.4)
+
+GIT
+  remote: git://github.com/ntxcode/database_rewinder.git
+  revision: 73bd1b71a09e09c0c7c8c77d3a5c7446c990edee
+  branch: filtering_interface
+  specs:
+    database_rewinder (0.5.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    CFPropertyList (2.3.1)
+    actionmailer (4.1.10)
+      actionpack (= 4.1.10)
+      actionview (= 4.1.10)
+      mail (~> 2.5, >= 2.5.4)
+    actionpack (4.1.10)
+      actionview (= 4.1.10)
+      activesupport (= 4.1.10)
+      rack (~> 1.5.2)
+      rack-test (~> 0.6.2)
+    actionview (4.1.10)
+      activesupport (= 4.1.10)
+      builder (~> 3.1)
+      erubis (~> 2.7.0)
+    activemodel (4.1.10)
+      activesupport (= 4.1.10)
+      builder (~> 3.1)
+    activerecord (4.1.10)
+      activemodel (= 4.1.10)
+      activesupport (= 4.1.10)
+      arel (~> 5.0.0)
+    activerecord-postgis-adapter (2.2.1)
+      activerecord (>= 4.0.0, < 4.2.0)
+      rgeo-activerecord (~> 1.2)
+    activesupport (4.1.10)
+      i18n (~> 0.6, >= 0.6.9)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.1)
+      tzinfo (~> 1.1)
+    addressable (2.4.0)
+    api-pagination (4.1.1)
+    arel (5.0.1.20140414130214)
+    armor (0.0.3)
+    ast (2.0.0)
+    astrolabe (1.3.0)
+      parser (>= 2.2.0.pre.3, < 3.0)
+    atomic_arrays (1.1.0)
+      activerecord (>= 4.0)
+    awesome_print (1.6.1)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
+    axlsx (2.0.1)
+      htmlentities (~> 4.3.1)
+      nokogiri (>= 1.4.1)
+      rubyzip (~> 1.0.0)
+    bcrypt (3.1.10)
+    brcpfcnpj (3.3.0)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
+    builder (3.2.2)
+    byebug (2.7.0)
+      columnize (~> 0.3)
+      debugger-linecache (~> 1.2)
+    cancancan (1.10.1)
+    carrierwave (0.10.0)
+      activemodel (>= 3.2.0)
+      activesupport (>= 3.2.0)
+      json (>= 1.7)
+      mime-types (>= 1.16)
+    certifi (2015.08.10)
+    clipboard (1.0.6)
+    coderay (1.1.0)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
+    columnize (0.9.0)
+    concurrent-ruby (1.0.2)
+    connection_pool (2.2.0)
+    cpf_faker (1.3.0)
+      clipboard
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
+    daemons (1.2.2)
+    dbf (2.0.9)
+      fastercsv (~> 1.5)
+    debugger-linecache (1.2.0)
+    dentaku (2.0.7)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
+    diff-lcs (1.2.5)
+    dotenv (2.0.1)
+    equalizer (0.0.11)
+    erubis (2.7.0)
+    eventmachine (1.0.7)
+    excon (0.45.1)
+    exifr (1.2.3.1)
+    factory_girl (4.3.0)
+      activesupport (>= 3.0.0)
+    faraday (0.9.2)
+      multipart-post (>= 1.2, < 3)
+    fastercsv (1.5.5)
+    ffaker (2.0.0)
+    fission (0.5.0)
+      CFPropertyList (~> 2.2)
+    fog (1.28.0)
+      fog-atmos
+      fog-aws (~> 0.0)
+      fog-brightbox (~> 0.4)
+      fog-core (~> 1.27, >= 1.27.3)
+      fog-ecloud
+      fog-json
+      fog-profitbricks
+      fog-radosgw (>= 0.0.2)
+      fog-riakcs
+      fog-sakuracloud (>= 0.0.4)
+      fog-serverlove
+      fog-softlayer
+      fog-storm_on_demand
+      fog-terremark
+      fog-vmfusion
+      fog-voxel
+      fog-xml (~> 0.1.1)
+      ipaddress (~> 0.5)
+      nokogiri (~> 1.5, >= 1.5.11)
+    fog-atmos (0.1.0)
+      fog-core
+      fog-xml
+    fog-aws (0.1.1)
+      fog-core (~> 1.27)
+      fog-json (~> 1.0)
+      fog-xml (~> 0.1)
+      ipaddress (~> 0.8)
+    fog-brightbox (0.7.1)
+      fog-core (~> 1.22)
+      fog-json
+      inflecto (~> 0.0.2)
+    fog-core (1.29.0)
+      builder
+      excon (~> 0.38)
+      formatador (~> 0.2)
+      mime-types
+      net-scp (~> 1.1)
+      net-ssh (>= 2.1.3)
+    fog-ecloud (0.0.2)
+      fog-core
+      fog-xml
+    fog-json (1.0.0)
+      multi_json (~> 1.0)
+    fog-profitbricks (0.0.2)
+      fog-core
+      fog-xml
+      nokogiri
+    fog-radosgw (0.0.3)
+      fog-core (>= 1.21.0)
+      fog-json
+      fog-xml (>= 0.0.1)
+    fog-riakcs (0.1.0)
+      fog-core
+      fog-json
+      fog-xml
+    fog-sakuracloud (1.0.0)
+      fog-core
+      fog-json
+    fog-serverlove (0.1.1)
+      fog-core
+      fog-json
+    fog-softlayer (0.4.1)
+      fog-core
+      fog-json
+    fog-storm_on_demand (0.1.0)
+      fog-core
+      fog-json
+    fog-terremark (0.0.4)
+      fog-core
+      fog-xml
+    fog-vmfusion (0.0.1)
+      fission
+      fog-core
+    fog-voxel (0.0.2)
+      fog-core
+      fog-xml
+    fog-xml (0.1.1)
+      fog-core
+      nokogiri (~> 1.5, >= 1.5.11)
+    foreman (0.78.0)
+      thor (~> 0.19.1)
+    formatador (0.2.5)
+    garner (0.5.1)
+      activesupport
+      json
+      multi_json (>= 1.3.0)
+      rack
+    geocoder (1.2.8)
+    god (0.13.7)
+    grape (0.14.0)
+      activesupport
+      builder
+      hashie (>= 2.1.0)
+      multi_json (>= 1.3.2)
+      multi_xml (>= 0.5.2)
+      rack (>= 1.3.0)
+      rack-accept
+      rack-mount
+      virtus (>= 1.0.0)
+    grape-swagger (0.10.1)
+      grape (>= 0.8.0)
+      grape-entity
+    grape_logging (1.3.0)
+      grape
+    hashdiff (0.2.3)
+    hashie (3.4.4)
+    htmlentities (4.3.4)
+    httparty (0.13.3)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    i18n (0.7.0)
+    ice_nine (0.11.2)
+    inflecto (0.0.2)
+    ipaddress (0.8.0)
+    json (1.8.3)
+    jwt (1.4.1)
+    knapsack (1.0.4)
+    mail (2.6.3)
+      mime-types (>= 1.16, < 3)
+    method_source (0.8.2)
+    mime-types (2.6.1)
+    mini_magick (4.2.0)
+    mini_portile (0.6.2)
+    minitest (5.9.0)
+    multi_json (1.12.1)
+    multi_xml (0.5.5)
+    multipart-post (2.0.0)
+    net-http-persistent (2.9.4)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.9.2)
+    nokogiri (1.6.6.2)
+      mini_portile (~> 0.6.0)
+    oauth (0.4.7)
+    oauth2 (1.0.0)
+      faraday (>= 0.8, < 0.10)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      multi_xml (~> 0.5)
+      rack (~> 1.2)
+    oj (2.12.1)
+    oj_mimic_json (1.0.1)
+    omniauth (1.2.2)
+      hashie (>= 1.2, < 4)
+      rack (~> 1.0)
+    omniauth-facebook (2.0.1)
+      omniauth-oauth2 (~> 1.2)
+    omniauth-google-oauth2 (0.2.6)
+      omniauth (> 1.0)
+      omniauth-oauth2 (~> 1.1)
+    omniauth-oauth (1.0.1)
+      oauth
+      omniauth (~> 1.0)
+    omniauth-oauth2 (1.2.0)
+      faraday (>= 0.8, < 0.10)
+      multi_json (~> 1.3)
+      oauth2 (~> 1.0)
+      omniauth (~> 1.2)
+    omniauth-twitter (1.1.0)
+      multi_json (~> 1.3)
+      omniauth-oauth (~> 1.0)
+    paper_trail (4.0.0.beta2)
+      activerecord (>= 3.0, < 6.0)
+      activesupport (>= 3.0, < 6.0)
+    parallel (1.4.1)
+    parser (2.2.0.3)
+      ast (>= 1.1, < 3.0)
+    passenger (5.0.30)
+      rack
+      rake (>= 0.8.1)
+    pg (0.18.1)
+    pg_search (1.0.5)
+      activerecord (>= 3.1)
+      activesupport (>= 3.1)
+      arel
+    polyamorous (1.1.0)
+      activerecord (>= 3.0)
+    powerpack (0.1.0)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-byebug (1.3.3)
+      byebug (~> 2.7)
+      pry (~> 0.10)
+    pry-remote (0.1.8)
+      pry (~> 0.9)
+      slop (~> 3.0)
+    rack (1.5.5)
+    rack-accept (0.4.5)
+      rack (>= 0.4)
+    rack-cors (0.3.1)
+    rack-mount (0.8.3)
+      rack (>= 1.0.0)
+    rack-protection (1.5.3)
+      rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rainbow (2.0.0)
+    rake (11.2.2)
+    redis (3.3.1)
+    redis-activesupport (4.0.0)
+      activesupport (~> 4)
+      redis-store (~> 1.1.0)
+    redis-namespace (1.5.2)
+      redis (~> 3.0, >= 3.0.4)
+    redis-store (1.1.4)
+      redis (>= 2.2)
+    redlock (0.1.1)
+      redis (~> 3, >= 3.0.5)
+    require_all (1.3.2)
+    rgeo (0.3.20)
+    rgeo-activerecord (1.2.0)
+      activerecord (~> 4.0)
+      rgeo (~> 0.3)
+    rgeo-shapefile (0.2.3)
+      dbf (>= 1.7.0)
+      rgeo (>= 0.3.3)
+    rspec (3.2.0)
+      rspec-core (~> 3.2.0)
+      rspec-expectations (~> 3.2.0)
+      rspec-mocks (~> 3.2.0)
+    rspec-core (3.2.2)
+      rspec-support (~> 3.2.0)
+    rspec-expectations (3.2.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-mocks (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-sidekiq (2.1.0)
+      rspec (~> 3.0, >= 3.0.0)
+      sidekiq (>= 2.4.0)
+    rspec-support (3.2.2)
+    rubocop (0.29.1)
+      astrolabe (~> 1.3)
+      parser (>= 2.2.0.1, < 3.0)
+      powerpack (~> 0.1)
+      rainbow (>= 1.99.1, < 3.0)
+      ruby-progressbar (~> 1.4)
+    ruby-progressbar (1.7.5)
+    rubyzip (1.0.0)
+    rufus-scheduler (3.2.0)
+    safe_yaml (1.0.4)
+    sentry-raven (0.14.0)
+      certifi
+      faraday (>= 0.7.6)
+    settingslogic (2.0.9)
+    shoulda-matchers (2.8.0)
+      activesupport (>= 3.0.0)
+    sidekiq (4.1.4)
+      concurrent-ruby (~> 1.0)
+      connection_pool (~> 2.2, >= 2.2.0)
+      redis (~> 3.2, >= 3.2.1)
+      sinatra (>= 1.4.7)
+    sidekiq-cron (0.4.2)
+      redis-namespace (>= 1.5.2)
+      rufus-scheduler (>= 2.0.24)
+      sidekiq (>= 4.0.0)
+    sidekiq-unique-jobs (4.0.17)
+      sidekiq (>= 2.6)
+      thor
+    sinatra (1.4.7)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
+    slackhook (1.0)
+    slop (3.6.0)
+    squeel (1.2.3)
+      activerecord (>= 3.0)
+      activesupport (>= 3.0)
+      polyamorous (~> 1.1.0)
+    terminal-notifier (1.6.2)
+    test_after_commit (1.0.0)
+      activerecord (>= 3.2)
+    textacular (3.2.2)
+      activerecord (>= 3.0, < 5.0)
+    thin (1.6.3)
+      daemons (~> 1.0, >= 1.0.9)
+      eventmachine (~> 1.0)
+      rack (~> 1.0)
+    thor (0.19.1)
+    thread_safe (0.3.5)
+    tilt (2.0.5)
+    timecop (0.8.0)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
+    webmock (1.22.3)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
+    will_paginate (3.0.7)
+    yell (2.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actionmailer (= 4.1.10)
+  actionpack (= 4.1.10)
+  activerecord (= 4.1.10)
+  activerecord-postgis-adapter
+  activesupport (= 4.1.10)
+  api-pagination
+  armor
+  atomic_arrays
+  awesome_print
+  axlsx
+  bcrypt (~> 3.1.7)
+  brcpfcnpj
+  cancancan (~> 1.10)
+  carrierwave (~> 0.10.0)
+  cpf_faker
+  cubes!
+  database_rewinder!
+  dentaku
+  dotenv
+  exifr
+  factory_girl (~> 4.3.0)
+  ffaker
+  fog (~> 1.28.0)
+  foreman
+  garner
+  geocoder
+  god
+  grape (~> 0.14.0)
+  grape-entity!
+  grape-swagger
+  grape_logging
+  knapsack
+  mini_magick
+  minitest
+  oj
+  oj_mimic_json
+  omniauth
+  omniauth-facebook
+  omniauth-google-oauth2
+  omniauth-twitter
+  paper_trail (~> 4.0.0.beta2)
+  parallel
+  passenger (~> 5.0.30)
+  pg
+  pg_search
+  pry-byebug (= 1.3.3)
+  pry-remote
+  pushmeup!
+  rack-cors
+  redis-activesupport
+  redlock
+  require_all
+  rgeo (= 0.3.20)
+  rgeo-shapefile
+  rspec (~> 3.2.0)
+  rspec-nc!
+  rspec-sidekiq
+  rubocop
+  ruby-progressbar
+  sentry-raven
+  settingslogic
+  shoulda-matchers
+  sidekiq (= 4.1.4)
+  sidekiq-cron
+  sidekiq-unique-jobs
+  sinatra (>= 1.3.0)
+  slackhook
+  squeel
+  test_after_commit
+  textacular (~> 3.0)
+  thin
+  timecop
+  webmock
+  will_paginate
+  yell
+
+RUBY VERSION
+   ruby 2.2.2p95
+
+BUNDLED WITH
+   1.12.5

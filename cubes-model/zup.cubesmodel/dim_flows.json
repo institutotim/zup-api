@@ -1,0 +1,6 @@
+{
+  "name": "flows",
+  "label": "Fluxo",
+  "attributes": [{ "name": "id" }, { "name": "title" }],
+  "label_attribute": "title"
+}

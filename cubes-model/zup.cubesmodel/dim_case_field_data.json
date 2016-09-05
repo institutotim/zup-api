@@ -1,0 +1,12 @@
+{
+    "name": "bi_case_fields_data",
+    "label": "Valores",
+    "levels": [
+        {
+            "attributes": [{ "name": "value" }],
+            "name": "value",
+            "key": "value",
+            "label": "Valor"
+        }
+    ]
+}

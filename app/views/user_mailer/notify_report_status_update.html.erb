@@ -1,0 +1,14 @@
+<tr>
+  <td bgcolor="#ffffff" align="center" valign="top" style="padding:0 45px;">
+    <h1 style="color:#2DB0dC; font-weight:300; font-family:'Open Sans', Arial; text-align:center; margin:40px 0 0 0;"><%= greetings_for_email %></h1>
+    <h2 style="color:#000000; font-size:19px; font-weight:300; font-family:'Open Sans', Arial; text-align:center; margin:0 0 40px 0;">Confira a atualização e o resumo da sua solicitação.</h2>
+  </td>
+
+  <% if @report.can_receive_feedback? %>
+    <%= render partial: 'report_feedback_button', locals: { report: @report } %>
+  <% end %>
+</tr><%= render partial: 'report', locals: { report: @report } %>
+
+<% if @report.can_receive_feedback? %>
+  <%= render partial: 'report_feedback_button', locals: { report: @report } %>
+<% end %>

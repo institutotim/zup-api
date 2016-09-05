@@ -1,0 +1,6 @@
+{
+    "name": "group",
+    "label": "Grupo solucionador atribuído",
+    "attributes": [{ "name": "id" }, { "name": "name" }],
+    "label_attribute": "name"
+}

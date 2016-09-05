@@ -1,0 +1,8 @@
+pt-BR:
+  grape:
+    errors:
+      messages:
+        coerce: 'não é válido'
+        presence: 'não pode ficar em branco'
+        regexp: 'não é válido'
+        values: 'não é válido'

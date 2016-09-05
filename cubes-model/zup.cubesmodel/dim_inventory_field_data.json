@@ -1,0 +1,13 @@
+{
+    "name": "bi_inventory_fields_data",
+    "label": "Valores",
+    "levels": [
+        {
+            "attributes": [{ "name": "value" }, { "name": "label" }],
+            "name": "data",
+            "key": "value",
+            "label": "Valor",
+            "label_attribute": "label"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+:concurrency: 2
+production:
+  :concurrency: 2
+:queues:
+  - critical
+  - webhook
+  - high
+  - medium
+  - low
+  - default

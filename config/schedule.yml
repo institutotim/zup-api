@@ -1,0 +1,11 @@
+unlock_inventory_items:
+  cron: "* * * * *"
+  class: "UnlockInventoryItems"
+
+set_reports_overdue:
+  cron: "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
+  class: "SetReportsOverdue"
+
+expire_access_keys:
+  cron: "0 6 * * *"
+  class: "ExpireAccessKeys"

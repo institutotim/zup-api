@@ -1,0 +1,91 @@
+{
+    "name": "ZUP",
+    "joins": [
+        { "name": "reports_category", "detail": "reports_categories.id", "alias": "reports_category" },
+        { "name": "reports_status", "detail": "reports_statuses.id", "alias": "reports_status" },
+        { "name": "reports_perimeter", "detail": "reports_perimeters.id", "alias": "reports_perimeter" },
+        { "name": "inventory_category", "detail": "inventory_categories.id", "alias": "inventory_category" },
+        { "name": "inventory_status", "detail": "inventory_statuses.id", "alias": "inventory_status" },
+        { "name": "group", "detail": "groups.id", "alias": "group" },
+        { "name": "user", "detail": "users.id", "alias": "user" }
+    ],
+    "mappings": {
+        "created_at.year": { "column": "created_at", "extract": "year" },
+        "created_at.month": { "column": "created_at", "extract": "month" },
+        "created_at.day": { "column": "created_at", "extract": "day" },
+
+        "updated_at.year": { "column": "created_at", "extract": "year" },
+        "updated_at.month": { "column": "created_at", "extract": "month" },
+        "updated_at.day": { "column": "created_at", "extract": "day" },
+
+        "resolved_at.year": { "column": "resolved_at", "extract": "year" },
+        "resolved_at.month": { "column": "resolved_at", "extract": "month" },
+        "resolved_at.day": { "column": "resolved_at", "extract": "day" },
+
+        "overdue_at.year": { "column": "overdue_at", "extract": "year" },
+        "overdue_at.month": { "column": "overdue_at", "extract": "month" },
+        "overdue_at.day": { "column": "overdue_at", "extract": "day" },
+
+        "locked_at.year": { "column": "locked_at", "extract": "year" },
+        "locked_at.month": { "column": "locked_at", "extract": "month" },
+        "locked_at.day": { "column": "locked_at", "extract": "day" },
+
+        "geographic.country": "country",
+        "geographic.state": "state",
+        "geographic.city": "city",
+        "geographic.district": "district",
+        "geographic.address": "address",
+        "geographic.reference": "reference",
+        "geographic.postal_code": "postal_code",
+
+        "case_status": "status",
+        "cases_resolution_status": "resolution_states"
+    },
+    "dimensions": [
+        { "name": "created_at", "template": "date", "label": "Data de criação" },
+        { "name": "updated_at", "template": "date", "label": "Data de atualização" },
+        { "name": "resolved_at", "template": "date", "label": "Data de resolução" },
+        { "name": "overdue_at", "template": "date", "label": "Data em atraso" },
+        { "name": "locked_at", "template": "date", "label": "Data em bloqueio" },
+        { "name": "user", "template": "user", "label": "Solicitante" },
+        { "name": "reporter", "template": "user", "alias": "reporter", "label": "Autor" },
+        { "name": "assigned_user", "template": "user", "alias": "assigned_user", "label": "Usuário responsável" },
+
+        { "name": "cases_created_by", "template": "user", "label": "Criador do caso" },
+        { "name": "cases_updated_by", "template": "user", "label": "Último usuário que atualizou" },
+        { "name": "cases_responsible_user", "template": "user", "label": "Responsável atual" },
+
+        {
+            "name": "confidential",
+            "label": "Privado",
+            "info": {
+                "cv-boolean-label": {
+                    "true": "Privado",
+                    "false": "Público"
+                }
+            }
+        },
+        {
+            "name": "overdue",
+            "label": "Atrasado",
+            "info": {
+                "cv-boolean-label": {
+                    "true": "Atrasado",
+                    "false": "Em dia"
+                }
+            }
+        },
+        {
+            "name": "case_status",
+            "label": "Estado do caso",
+            "info": {
+                "cv-boolean-label": {
+                    "active": "Ativo",
+                    "finished": "Finalizado",
+                    "inactive": "Inativo",
+                    "not_satisfied": "Não finalizado"
+                }
+            }
+        }
+    ]
+}

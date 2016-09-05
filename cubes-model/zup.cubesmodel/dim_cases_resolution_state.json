@@ -1,0 +1,6 @@
+{
+  "name": "cases_resolution_status",
+  "label": "Estado de resolução",
+  "attributes": [{ "name": "id" }, { "name": "title" }],
+  "label_attribute": "title"
+}

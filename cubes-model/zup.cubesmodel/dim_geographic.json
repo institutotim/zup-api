@@ -1,0 +1,18 @@
+{
+    "name": "geographic",
+    "label": "Referência geográfica",
+    "levels": [
+        { "name": "country", "label": "País" },
+        { "name": "state", "label": "Estado" },
+        { "name": "city", "label": "Cidade" },
+        { "name": "district", "label": "Bairro" },
+        { "name": "postal_code", "label": "CEP"},
+        { "name": "address", "label": "Endereço" },
+        { "name": "reference", "label": "Referência" }
+    ],
+    "hierarchies": [
+        { "name": "region", "label": "Região", "levels": ["district", "city", "state", "country"] },
+        { "name": "address", "label": "Endereço", "levels": ["address", "reference", "postal_code"] }
+    ],
+    "default_hierarchy_name": "region"
+}
