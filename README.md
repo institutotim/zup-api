@@ -55,7 +55,7 @@ Fique atento quanto a versão instalada, você poderá usar a 9.4 ou superior. C
 
 Caso esteja usando Ubuntu 14.04, é possível que a versão 9.4 do postgres não esteja disponível. Nesse caso, adicione o repositório do postgres no server para baixar a versão mais nova. [Veja mais infos aqui](http://www.postgresql.org/download/linux/ubuntu/).
 
-`
+```
   // Abra o arquivo source.list do sistema com seu editor de preferencia (aqui usamos vi)
   # vi /etc/apt/source.list
   // Acrescente a linha do repositório voltada para a versão do ubuntu 14.04
@@ -65,20 +65,23 @@ Caso esteja usando Ubuntu 14.04, é possível que a versão 9.4 do postgres não
   # sudo apt-get update
   // Feito isso com sucesso você já pode rodar novamente o comando de instalação do postgres e postgis
   # apt-get install postgresql postgresql-contrib postgis postgresql-9.4-postgis-2.1 postgresql-9.4-postgis-2.1-scripts
-`
+```
 
 4.Instale o ImageMagic:
-`
+
+```
   # apt-get install imagemagick
-`
+```
 
 5.Instale o git:
-`
+
+```
   # apt-get install git
-`
+```
 
 6.Instale o Ruby, utilizaremos o [RVM](https://rvm.io/) mas fique a vontade para instalar de outra forma:
-`
+
+```
   // Antes de instalar precisamos de de uma chave publica de segurança
   # gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
   // Baixe a versão estável
@@ -91,10 +94,11 @@ Caso esteja usando Ubuntu 14.04, é possível que a versão 9.4 do postgres não
   # rvm install 2.2.1
   // Cheque se o ruby foi instalado
   # ruby -v
-`
+```
 
 7.Instale o Redis - Ver mais infos aqui http://redis.io/download
-`
+
+```
   // Instale o buld-essencials para compilar o código
   # sudo apt-get install build-essential
   //Baixe o código
@@ -105,29 +109,32 @@ Caso esteja usando Ubuntu 14.04, é possível que a versão 9.4 do postgres não
   $ cd redis-3.2.0
   // Rode o make
   $ make
-`
+```
 
 Caso tenho problemas de instalação causado por algumas bibliotecas faltantes como jemalloc, execute os seguintes passos:
-`
+
+```
   // Instale o jemalloc
   $ cd deps
   $ make jemalloc
   $ make hiredis lua jemalloc linenoise
-`
+```
 
 Rode o make test e depois instale no sistema:
-`
+
+```
   $ make test
   $ sudo make install
-`
+```
 
 Os binários ficarão compilados no diretório /src. Você pode rodar o regis com
-`
+
+```
   // Server
   $ src/redis-server
   // Client
   $ src/redis-cli
-`
+```
 
 ### Bibliotecas
 
