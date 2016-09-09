@@ -88,7 +88,7 @@ module Cases
         # Filtering by status
         if safe_params.has_key? :completed
           if safe_params[:completed]
-            kases = kases.where(status: ['inactive', 'finished'])
+            kases = kases.where(status: ['finished'])
           else
             kases = kases.where.not(status: ['inactive', 'finished'])
           end

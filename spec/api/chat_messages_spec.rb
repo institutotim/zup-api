@@ -120,7 +120,6 @@ describe ChatMessages::API do
         notifications = mentioned_user.notifications
 
         expect(notifications.count).to eq(1)
-        expect(notifications.last.notificable).to eq(chat_message)
       end
 
       it "returns messages's data correctly" do
@@ -141,7 +140,7 @@ describe ChatMessages::API do
     context 'missing message text' do
       let(:params) do
         {
-          chattable_type: 'case',
+          chattable_type: 'Case',
           chattable_id: case_instance.id
         }
       end

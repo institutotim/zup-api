@@ -4,6 +4,7 @@ class ChatRoom < ActiveRecord::Base
 
   belongs_to :namespace
   has_many :chat_messages, as: :chattable
+  has_many :notifications, as: :notificable
 
   pg_search_scope :search, against: :title, using: { tsearch: { prefix: true } }
 

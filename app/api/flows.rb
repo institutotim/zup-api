@@ -67,7 +67,7 @@ module Flows
         flow_params.merge!(safe_params.permit(resolution_states: [:id, :title, :default]))
         if flow_params[:resolution_states]
           validate_permission!(:create, ResolutionState)
-          flow.update_resolution_states(flow_params[:resolution_states].map { |rs| rs.merge!(user: current_user) })
+          Flows::UpdateResolutionStates.new(flow, current_user).update!(extra_params[:resolution_states])
         end
 
         { message: I18n.t(:flow_created), flow: Flow::Entity.represent(flow, only: return_fields, display_type: 'full') }
@@ -121,7 +121,7 @@ module Flows
 
           if extra_params[:resolution_states]
             validate_permission!(:update, ResolutionState)
-            flow.update_resolution_states(extra_params[:resolution_states].map { |rs| rs.merge!(user: current_user) })
+            Flows::UpdateResolutionStates.new(flow, current_user).update!(extra_params[:resolution_states])
           end
 
           flow.update!(flow_params)

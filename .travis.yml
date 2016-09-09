@@ -1,0 +1,15 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+  
+script:
+  - ./build_and_test.sh build
+  - ./build_and_test.sh rubocop
+  - ./build_and_test.sh test 0 1
+
+deploy:
+  provider: script
+  script: ./build_and_test.sh deploy

@@ -2,7 +2,7 @@ class Case < ActiveRecord::Base
   include PgSearch
   include NamespaceFilterable
 
-  scope :active,       -> { where(status: %w{active pending transfer not_satisfied}) }
+  scope :active,       -> { where(status: %w{active pending transfer not_satisfied finished}) }
   scope :not_inactive, -> { where.not(status: 'inactive') }
   scope :inactive,     -> { where(status: 'inactive') }
 

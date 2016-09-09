@@ -1,6 +1,6 @@
 God.watch do |w|
   w.name = 'Cubes Slicer Server'
-  w.start = "/bin/bash -c \"(kill -9 $(ps aux | grep slicer | awk 'NR==1{print $2}') || true) && slicer serve slicer.ini\""
+  w.start = "/bin/bash -c \"ps aux | grep slicer | grep -v \"grep\" | awk '{print $2}' | xargs kill -9 && slicer serve slicer.ini\""
   w.dir = File.join(__dir__, 'cubes')
   w.log = File.join(__dir__, 'log', 'cubes.log')
   w.start_grace = 20.seconds

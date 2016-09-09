@@ -11,6 +11,7 @@ namespace :users do
         user.name = FFaker::Name.name
         user.document = Faker::CPF.numeric
         user.postal_code = '04005000'
+        user.phone = '11999999999'
         user.save(validate: false)
       end
     end

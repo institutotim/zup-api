@@ -1,9 +1,10 @@
 module Reports
   class ManageCategory
-    attr_reader :category, :params
+    attr_reader :category, :params, :old_color
 
     def initialize(category = Reports::Category.new)
       @category = category
+      @old_color = category.color
     end
 
     def create!(params = {})
@@ -50,7 +51,7 @@ module Reports
     end
 
     def update_category_icons
-      if params[:icon] || params[:marker] || (category.color_changed?)
+      if params[:icon] || (params[:color] && params[:color] != old_color)
         category.icon.recreate_versions!
         category.marker.recreate_versions!
         category.save!
@@ -60,6 +61,8 @@ module Reports
     def build_category_params
       category_params = params.permit(:title, :color, :icon, :marker, :parent_id,
         :namespace_id)
+
+      category_params[:marker] = category_params[:icon]
 
       fields_params = params.permit(
         custom_fields: [:id, :title, :multiline, :_destroy]

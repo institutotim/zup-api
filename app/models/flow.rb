@@ -116,38 +116,6 @@ class Flow < ActiveRecord::Base
     end
   end
 
-  def update_resolution_states(resolution_states)
-    current_rs_ids = self.resolution_states.pluck(:id) # ids of the existing resolution states for this flow
-
-    transaction do
-      # If creating or updating the default state, change the old one to false
-      new_default_rs = resolution_states.select { |rs| rs['default'] }
-      fail(ActiveRecord::RecordInvalid.new(self)) if new_default_rs.count > 1
-
-      if new_default_rs.any?
-        new_default_rs = new_default_rs.first
-        current_default = self.resolution_states.where(default: true).first
-        current_default.update_attribute(:default, false) if current_default && current_default.id != new_default_rs['id']
-      end
-
-      # Add new resolution states
-      resolution_states.select { |rs| !rs['id'] }
-          .each { |rs| self.resolution_states.create!(rs.merge!(flow_id: id)) }
-
-      # Update existing resolution states
-      resolution_states.select { |rs| rs['id'] } # items with an id field are meant to be updated
-          .select { |rs| current_rs_ids.include?(rs['id'].to_i) } # so they must exist in the current_rs_ids
-          .each { |rs| self.resolution_states.find(rs['id']).update!(rs) }
-
-      # Prune old resolution states
-      new_rs_ids = resolution_states.map { |rs| rs['id'] } # ids of the new resolution state set
-      rs_ids_to_remove = current_rs_ids.select { |rs_id| !new_rs_ids.include?(rs_id) } # if not present they must be removed
-      self.resolution_states.where(id: rs_ids_to_remove).update_all(active: false)
-    end
-
-    nil
-  end
-
   def cases_arent_using?
     not (my_cases.present? || my_steps(step_type: 'form').map(&:my_case_steps).flatten.present?)
   end
