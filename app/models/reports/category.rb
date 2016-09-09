@@ -202,5 +202,9 @@ class Reports::Category < Reports::Base
     def setting
       Reports::CategorySetting.where(reports_category_id: object.id, namespace_id: @@namespace_id).first!
     end
+
+    def namespace
+      object.namespace || options[:default_namespace]
+    end
   end
 end

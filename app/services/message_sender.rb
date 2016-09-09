@@ -30,8 +30,8 @@ class MessageSender
     notification = {
       title: "Você foi mencionado por #{@user.name}",
       description: read_more(message.text, 80),
-      notificable_id: message.id,
-      notificable_type: 'ChatMessage'
+      notificable_id: message.chattable_id,
+      notificable_type: 'ChatRoom'
     }
 
     Notify.perform_async(mentioned, notification)

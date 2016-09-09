@@ -177,8 +177,6 @@ module Reports::Categories
         category = Reports::Category.find(params[:id])
         validate_permission!(:edit, category)
 
-        safe_params[:marker] = safe_params[:icon]
-
         service = Reports::ManageCategory.new(category)
         service.update!(app_namespace_id, safe_params)
 

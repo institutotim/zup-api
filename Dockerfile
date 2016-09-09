@@ -36,7 +36,7 @@ ENV POSTGIS_MAJOR 2.1
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/postgres.list
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip python-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-client-9.4 || true
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libpq-dev postgresql-client-9.4 || true
 RUN pip install Flask SQLAlchemy psycopg2 cubes==1.0.1
 
 RUN mkdir -p /usr/src/app/tmp \

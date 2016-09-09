@@ -334,7 +334,7 @@ module Users
     get '/autocomplete/user' do
       authenticate!
 
-      users = User.search_by_name(safe_params[:term]).reorder(:name).limit(USERS_SHOWN_ON_AUTOCOMPLETE)
+      users = User.where(namespace_id: app_namespace_id).search_by_name(safe_params[:term]).reorder(:name).limit(USERS_SHOWN_ON_AUTOCOMPLETE)
 
       {
         result: User::Entity.represent(users, display_type: 'autocomplete', only: [:id, :name, :mention_string])

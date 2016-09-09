@@ -25,6 +25,8 @@ module Utils
         error!(I18n.t(:permission_denied, action: :manage, table_name: :groups), 403)
       end
 
+      default_namespace = Namespace.find_by_default(true)
+
       groups = Group.includes(:permission).all.unscoped
       flows = Flow.all.unscoped
       flow_steps = Step.all.unscoped
@@ -39,7 +41,7 @@ module Utils
         flows: Flow::Entity.represent(flows, only: [:id, :title]),
         flow_steps: Step::Entity.represent(flow_steps, only: [:id, :title]),
         inventory_categories: Inventory::Category::Entity.represent(inventory_categories, only: [:id, :title, :namespace]),
-        reports_categories: Reports::Category::Entity.represent(reports_categories, only: [:id, :title, :namespace, subcategories: [:id, :title, :namespace]], display_type: :full),
+        reports_categories: Reports::Category::Entity.represent(reports_categories, only: [:id, :title, :namespace, subcategories: [:id, :title, :namespace]], display_type: :full, default_namespace: default_namespace),
         business_reports: BusinessReport::Entity.represent(business_reports, only: [:id, :title, :namespace]),
         chat_rooms: ChatRoom::Entity.represent(chat_rooms, only: [:id, :title, :namespace]),
         namespaces: namespaces

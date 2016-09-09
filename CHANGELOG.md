@@ -1,5 +1,18 @@
 # Histórico de mudanças
 
+## 1.2.1 - 09/09/2016
+### Novas funcionalidades
+- [Permissões] Adicionado label da localidade de cada item na tela de edição de permissões
+- [Notificações] Adicionado polling e corrigido link de notificações de mensagens no chat
+
+### Melhorias
+- [Chat] Leva em consideração a localidade atual para listar os usuários no sistema de menções do chat
+
+### Correções
+- [Relatos] Ao remover um grupo do sistema que esteja marcado como solucionar em algum categoria, resetar.
+- [Cubes] Corrigido comando de reinicio do slicer server
+- [Casos] Não exibir casos desativados na listagem
+
 ## 1.2.0 - 05/09/2016
 ### Novas funcionalidades
 - [Relatórios] Novo sistema de relatórios baseado em OLAP

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # See .gitlab-ci.yml for usage
 set -x
+CI_BUILD_REF=$TRAVIS_BUILD_ID
+CI_BUILD_REF_NAME=$TRAVIS_BRANCH
 [ "$CI_BUILD_REF" = "" ] && CI_BUILD_REF=$(( ( RANDOM % 100000 )  + 1 ))
 [ "$CI_BUILD_REF_NAME" = "" ] && CI_BUILD_REF_NAME=$(git symbolic-ref --short -q HEAD)
-[ "$CI_BUILD_REF_NAME" = "master" ] && CI_BUILD_REF_NAME="latest"
 POSTGRES_PASSWORD="zup"
 POSTGRES_USER="zup"
 SHARED_BUFFERS=128MB
@@ -51,8 +52,16 @@ test_node() {
 }
 
 deploy() {
-    docker push institutotim/zup-api:$CI_BUILD_REF_NAME
-    cleanup
+    if [ "$CI_BUILD_REF_NAME" = "master" ]; then
+        docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        docker push institutotim/zup-api:$CI_BUILD_REF_NAME
+        mkdir -p ~/.ssh
+        SSH_DEPLOY_KEY=~/.ssh/id_rsa
+        openssl aes-256-cbc -K $encrypted_3950bc108c24_key -iv $encrypted_3950bc108c24_iv -in .travis/ntxbot_unicef_deploy.enc -out $SSH_DEPLOY_KEY -d
+        chmod 600 $SSH_DEPLOY_KEY
+        ssh -i $SSH_DEPLOY_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $DEPLOY_TARGET "docker pull institutotim/zup-api:$CI_BUILD_REF_NAME; supervisorctl restart zup-api"
+        cleanup
+    fi
 }
 
 case "$1" in

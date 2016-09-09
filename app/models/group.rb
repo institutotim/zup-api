@@ -11,6 +11,8 @@ class Group < ActiveRecord::Base
 
   before_validation :set_default_attributes
 
+  after_destroy :remove_reports_categories_connections
+
   scope :guest, -> { where(guest: true) }
   default_scope -> { order('groups.id ASC') }
 
@@ -43,6 +45,21 @@ class Group < ActiveRecord::Base
   def self.included_in_permission?(groups, permission_name, id)
     permission_array = ids_for_permission(groups, permission_name)
     permission_array.include?(id)
+  end
+
+  def remove_reports_categories_connections
+    transaction do
+      Reports::Category.where(default_solver_group_id: id).update_all(default_solver_group_id: nil)
+      Reports::CategorySetting.where(default_solver_group_id: id).update_all(default_solver_group_id: nil)
+      Reports::CategorySetting.where('? = ANY(solver_groups_ids)', id).each do |category_setting|
+        category_setting.solver_groups -= [self]
+        category_setting.save!
+      end
+      Reports::Category.where('? = ANY(solver_groups_ids)', id).each do |category|
+        category.solver_groups -= [self]
+        category.save!
+      end
+    end
   end
 
   def to_s
