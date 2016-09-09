@@ -57,7 +57,7 @@ deploy() {
         docker push institutotim/zup-api:$CI_BUILD_REF_NAME
         mkdir -p ~/.ssh
         SSH_DEPLOY_KEY=~/.ssh/id_rsa
-        openssl aes-256-cbc -K $encrypted_3950bc108c24_key -iv $encrypted_3950bc108c24_iv -in .travis/ntxbot_unicef_deploy.enc -out $SSH_DEPLOY_KEY -d
+        openssl aes-256-cbc -K $encrypted_be5ba593e49d_key -iv $encrypted_be5ba593e49d_iv -in .travis/ntxbot_unicef_deploy.enc -out $SSH_DEPLOY_KEY -d
         chmod 600 $SSH_DEPLOY_KEY
         ssh -i $SSH_DEPLOY_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $DEPLOY_TARGET "docker pull institutotim/zup-api:$CI_BUILD_REF_NAME; supervisorctl restart zup-api"
         cleanup
