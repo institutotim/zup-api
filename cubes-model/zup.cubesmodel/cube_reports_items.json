@@ -1,6 +1,6 @@
 {
   "name": "bi_reports_items",
-  "label": "Relatos",
+  "label": "Alertas",
   "dimensions": [
     "created_at",
     "overdue_at",
@@ -50,7 +50,7 @@
   "aggregates": [
     {
       "name": "report_count",
-      "label": "Quantidade de Relatos",
+      "label": "Quantidade de Alertas",
       "function": "count",
       "info": {
         "cv-formatter": "value && value.toString()"

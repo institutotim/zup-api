@@ -1,6 +1,6 @@
 {
   "name": "reports_category",
-  "label": "Categoria de Relato",
+  "label": "Causa de alerta",
   "attributes": [{ "name": "id" }, { "name": "title" }],
   "label_attribute": "title"
 }

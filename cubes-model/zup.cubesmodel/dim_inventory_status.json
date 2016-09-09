@@ -1,6 +1,6 @@
 {
   "name": "inventory_status",
-  "label": "Estado de inventário",
+  "label": "Estado da Criança ou Adolescente",
   "attributes": [{ "name": "id" }, { "name": "title" }],
   "label_attribute": "title"
 }

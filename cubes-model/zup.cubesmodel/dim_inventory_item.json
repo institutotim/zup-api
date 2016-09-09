@@ -1,5 +1,5 @@
 {
     "name": "inventory_item",
-    "label": "Item de inventário",
+    "label": "Criança ou Adolescente",
     "attributes": ["id"]
 }

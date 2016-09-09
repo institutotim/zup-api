@@ -1,6 +1,6 @@
 {
     "name": "reports_status",
-    "label": "Estado de relato",
+    "label": "Status de alerta",
     "attributes": [{ "name": "id" }, { "name": "title" }],
     "label_attribute": "title"
 }

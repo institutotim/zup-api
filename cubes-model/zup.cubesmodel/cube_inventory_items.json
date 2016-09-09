@@ -1,6 +1,6 @@
 {
     "name": "inventory_items",
-    "label": "Inventários",
+    "label": "Crianças ou Adolescentes",
     "dimensions": [
         "created_at",
         "bi_inventory_fields",
@@ -13,7 +13,7 @@
     "aggregates": [
       {
         "name": "inventory_count",
-        "label": "Quantidade de Items de Inventário",
+        "label": "Quantidade Crianças ou Adolescentes",
         "function": "count",
         "info": {
           "cv-formatter": "value && value.toString()"

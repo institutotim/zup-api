@@ -1,6 +1,6 @@
 {
     "name": "namespace",
-    "label": "Localidade",
+    "label": "Município",
     "attributes": [{ "name": "id" }, { "name": "name" }],
     "label_attribute": "name"
 }

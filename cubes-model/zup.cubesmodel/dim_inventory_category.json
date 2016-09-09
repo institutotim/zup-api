@@ -1,6 +1,6 @@
 {
   "name": "inventory_category",
-  "label": "Categoria de Inventário",
+  "label": "Categoria de Banco de Dados",
   "attributes": [{ "name": "id" }, { "name": "title" }],
   "label_attribute": "title"
 }
