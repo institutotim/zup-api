@@ -20,7 +20,7 @@ FactoryGirl.define do
 
     factory :reports_category_with_statuses do
       after(:create) do |category, _|
-        namespace = Namespace.first_or_create(name: 'Namespace')
+        namespace = Namespace.first_or_create(default: true, name: 'Namespace')
 
         status_params = [
           attributes_for(:status, title: 'Em andamento').merge(namespace_id: namespace.id),
@@ -34,7 +34,7 @@ FactoryGirl.define do
     end
 
     after(:create) do |category, _|
-      namespace = Namespace.first_or_create(name: 'Namespace')
+      namespace = Namespace.first_or_create(default: true, name: 'Namespace')
       create(:reports_category_setting, namespace: namespace, category: category)
 
       Group.guest.each do |group|

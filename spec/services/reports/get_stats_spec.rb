@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Reports::GetStats  do
-  let!(:namespace)       { Namespace.first_or_create(name: 'Namespace') }
+  let!(:namespace)       { Namespace.first_or_create(default: true, name: 'Namespace') }
   let!(:report_category) { create(:reports_category_with_statuses) }
   let!(:status)          { report_category.status_categories.final.first.status }
 

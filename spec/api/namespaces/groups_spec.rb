@@ -75,7 +75,7 @@ describe 'Namespaces Groups' do
 
           json = parsed_body['groups']
 
-          expect(json.size).to eq(2)
+          expect(json.size).to eq(5)
 
           returned_ids = json.map { |g| g['id'] }
 

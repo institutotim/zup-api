@@ -1,5 +1,14 @@
 # Histórico de mudanças
 
+## 1.2.2 - 12/09/2016
+### Correções
+- [Relatórios] Corrige o uso da data de criação como dimensão horizontal para Casos
+- [Localidade] Corrige a geração de estado para categorias de relato na migração de localidade
+- [Relatos] Corrige a criação de configurações locais para categorias de relatos globais
+- [Geral] Corrigido teste para o módulo `ImportShapefile`
+- [Inventário] Corrigido teste para categoria de inventário
+- [Casos] Corrige a exclusão de casos para não ser mais exibido na listagem de casos finalizados
+
 ## 1.2.1 - 09/09/2016
 ### Novas funcionalidades
 - [Permissões] Adicionado label da localidade de cada item na tela de edição de permissões

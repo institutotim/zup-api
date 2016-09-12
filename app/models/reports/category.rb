@@ -137,7 +137,7 @@ class Reports::Category < Reports::Base
   class Entity < Grape::Entity
     delegate :resolution_time_enabled, :resolution_time, :private_resolution_time,
              :user_response_time, :allows_arbitrary_position, :confidential,
-             :default_solver_group_id, :solver_groups_ids, :notifications,
+             :default_solver_group_id, :default_solver_group, :solver_groups_ids, :notifications,
              :comment_required_when_forwarding, :ordered_notifications,
              :comment_required_when_updating_status, :perimeters, :flow_id,
              :priority, to: :setting, allow_nil: true

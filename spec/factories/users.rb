@@ -2,7 +2,7 @@ FactoryGirl.define do
   sequence(:password) { SecureRandom.hex[0..8] }
 
   factory :user do
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     email { FFaker::Internet.email }
     password

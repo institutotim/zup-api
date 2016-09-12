@@ -31,7 +31,7 @@ module Reports
     private
 
     def create_namespaces_settings_and_statuses
-      Namespace.all.each do |namespace|
+      Namespace.find_each do |namespace|
         update_or_create_settings(namespace.id)
         update_statuses(namespace.id)
       end

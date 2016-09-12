@@ -3,7 +3,7 @@ FactoryGirl.define do
     association :category, factory: :inventory_category_with_sections
     association :user, factory: :user
 
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     before(:create) do |item, _evaluator|
       item.category.fields.each do |field|

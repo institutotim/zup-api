@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :reports_notification_type, class: Reports::NotificationType do
     association :category, factory: :reports_category_with_statuses
 
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     title 'Notificação 1'
     order 0

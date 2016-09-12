@@ -3,7 +3,9 @@ require 'app_helper'
 describe CreateNamespace do
   let!(:category) { create(:reports_category_with_statuses) }
 
-  let(:valid_params) { { name: 'New Namespace' } }
+  let(:valid_params) do
+    { name: 'New Namespace' }
+  end
 
   subject { described_class.new }
 

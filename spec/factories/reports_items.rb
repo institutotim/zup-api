@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :reports_item, class: 'Reports::Item' do
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     position do
       RGeo::Geographic.simple_mercator_factory.point(

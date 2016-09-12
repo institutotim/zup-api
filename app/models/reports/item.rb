@@ -335,10 +335,11 @@ class Reports::Item < Reports::Base
   # before_save
   def set_initial_status
     if status.nil?
-      new_status = category.status_categories
-                           .unscoped
-                           .where(namespace_id: namespace_id)
-                           .initial.first!.status
+      new_status = Reports::StatusCategory.unscoped do
+        category.status_categories
+                .where(namespace_id: namespace_id)
+                .initial.first!.status
+      end
 
       Reports::UpdateItemStatus.new(self).set_status(new_status)
     end
