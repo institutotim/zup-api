@@ -85,7 +85,7 @@ task refresh_bi_views: :environment do
   DROP VIEW IF EXISTS bi_cases;
 
   CREATE VIEW bi_cases AS
-  SELECT c.id, cs.latest_executed_step_id, c.namespace_id, c.created_by_id, c.updated_by_id, c.status, c.initial_flow_id, c.responsible_user, c.source_reports_category_id, c.resolution_state_id FROM cases c,
+  SELECT c.id, cs.latest_executed_step_id, c.created_at, c.updated_at, c.namespace_id, c.created_by_id, c.updated_by_id, c.status, c.initial_flow_id, c.responsible_user, c.source_reports_category_id, c.resolution_state_id FROM cases c,
   LATERAL (SELECT step_id as latest_executed_step_id FROM case_steps WHERE case_id = c.id ORDER BY created_at DESC LIMIT 1) cs
   WHERE c.status != 'inactive';
   SQL

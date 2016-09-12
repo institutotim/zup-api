@@ -37,7 +37,7 @@ class ImportShapefile
           end
         end
       rescue => exception
-        perimeter.status = 'invalid_file'
+        perimeter.update!(status: 'invalid_file')
 
         ErrorHandler.capture_exception(exception)
       end

@@ -4,6 +4,6 @@ FactoryGirl.define do
     association :group
     association :perimeter, factory: :reports_perimeter
 
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
   end
 end

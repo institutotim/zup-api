@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :reports_perimeter, class: 'Reports::Perimeter' do
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     title 'Perimeter'
     status :pendent

@@ -2,7 +2,7 @@ require 'app_helper'
 
 describe MigrateNamespaces do
   let!(:namespace)         { Namespace.first_or_create(name: 'Namespace') }
-  let!(:default_namespace) { create(:namespace, name: 'Default', default: true) }
+  let!(:default_namespace) {  Namespace.first_or_create(name: 'Default', default: true) }
 
   let!(:group)  { create(:group, namespace: namespace) }
   let!(:user)   { create(:user, namespace: namespace) }

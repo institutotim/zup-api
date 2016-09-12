@@ -2,7 +2,7 @@ FactoryGirl.define do
   sequence(:name) { |n| "Random name #{n}" }
 
   factory :group do
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     name
     guest false

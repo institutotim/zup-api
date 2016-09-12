@@ -22,7 +22,7 @@ describe Reports::ManageCategory do
   end
 
   describe '#create!' do
-    let!(:namespaces) { create_list(:namespace, 2) }
+    let!(:namespaces) { create_list(:namespace, 2, default: true) }
 
     subject { described_class.new }
 

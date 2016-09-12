@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Reports::NotificationTypes::API do
-  let!(:namespace) { Namespace.first_or_create(name: 'Namespace') }
+  let!(:namespace) { Namespace.first_or_create(default: true, name: 'Namespace') }
   let(:user)       { create(:user) }
   let(:category)   { create(:reports_category_with_statuses) }
   let(:setting)    { category.settings.find_by(namespace_id: namespace.id) }

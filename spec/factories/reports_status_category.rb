@@ -3,7 +3,7 @@ FactoryGirl.define do
     association :category, factory: :reports_category
 
     status { create(:status) }
-    namespace { Namespace.first_or_create(name: 'Namespace') }
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
 
     color '#f8b01d'
     initial false

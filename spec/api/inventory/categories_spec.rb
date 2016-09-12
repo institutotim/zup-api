@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Inventory::Categories::API do
-  let(:user) { create(:user) }
+  let(:namespace) { create(:namespace) }
+  let(:user) { create(:user, namespace: namespace) }
 
   context 'POST /inventory/categories' do
     let!(:valid_params) do
@@ -12,7 +13,6 @@ describe Inventory::Categories::API do
           "plot_format": "pin",
           "color": "#e2e2e2",
           "require_item_status": true,
-          "namespace_id": #{user.namespace_id},
           "statuses": [{
             "title": "Initial Status",
             "color": "#ff0000"

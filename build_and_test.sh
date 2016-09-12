@@ -52,7 +52,7 @@ test_node() {
 }
 
 deploy() {
-    if [ "$CI_BUILD_REF_NAME" = "master" ]; then
+    if [ "$CI_BUILD_REF_NAME" = "unicef" ]; then
         docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         docker push institutotim/zup-api:$CI_BUILD_REF_NAME
         mkdir -p ~/.ssh

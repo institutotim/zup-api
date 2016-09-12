@@ -15,6 +15,8 @@ class SetDefaultNamespace < ActiveRecord::Migration
       execute "UPDATE #{table} SET namespace_id=#{default_namespace.id} WHERE namespace_id IS NULL"
     end
 
-    CreateStatusesForNamespace.new(default_namespace).create!
+    Reports::Category.all.each do |category|
+      category.settings.find_or_create_by(namespace_id: default_namespace.id)
+    end
   end
 end
