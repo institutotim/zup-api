@@ -13,3 +13,5 @@ script:
 deploy:
   provider: script
   script: ./build_and_test.sh deploy
+  on:
+    branch: unicef
