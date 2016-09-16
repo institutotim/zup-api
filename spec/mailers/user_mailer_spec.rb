@@ -6,6 +6,10 @@ describe UserMailer do
   let(:comment) { create(:reports_comment) }
   let(:status)  { report.status }
 
+  before do
+    ENV['WELCOME_USER_MAILER_MESSAGE'] = 'welcome message'
+  end
+
   describe 'send_password_recovery_instructions' do
     let(:mail) { described_class.send_password_recovery_instructions(user) }
 
@@ -21,19 +25,61 @@ describe UserMailer do
     end
   end
 
-  describe 'send_user_random_password' do
-    let(:mail) { described_class.send_user_random_password(user, 'password') }
+  describe 'welcome' do
+    context 'with randon password' do
+      subject { described_class.welcome(user, 'password') }
 
-    it 'renders the headers' do
-      expect(mail.subject).to eq('Você está cadastrado')
-      expect(mail.to).to eq([user.email])
-      expect(mail.from).to eq(['suporte@zeladoriaurbana.com.br'])
+      it 'should set correct subject' do
+        expect(subject.subject).to eq('Você está cadastrado')
+      end
+
+      it "should send email to user's mail" do
+        expect(subject.to).to eq([user.email])
+      end
+
+      it 'sender should be the default' do
+        expect(subject.from).to eq(['suporte@zeladoriaurbana.com.br'])
+      end
+
+      it 'should send correct welcome messages' do
+        expect(subject.body.encoded).to match('welcome message')
+      end
+
+      it 'should send password' do
+        expect(subject.body.encoded).to match('<strong>Foi criada uma senha temporária para o seu cadastro: </strong>password')
+      end
+
+      it 'should notify to change the password' do
+        expect(subject.body.encoded).to match('Recomendamos que você entre em seu perfil imediatamente e altere a sua senha.')
+      end
     end
 
-    it 'renders the body' do
-      expect(mail.body.encoded).to match('Seu cadastro foi realizado com sucesso')
-      expect(mail.body.encoded).to match('<strong>Foi criada uma senha temporária para o seu cadastro: </strong>password')
-      expect(mail.body.encoded).to match('Recomendamos que você entre em seu perfil imediatamente e altere a sua senha.')
+    context 'without randon password' do
+      subject { described_class.welcome(user) }
+
+      it 'should set correct subject' do
+        expect(subject.subject).to eq('Você está cadastrado')
+      end
+
+      it "should send email to user's mail" do
+        expect(subject.to).to eq([user.email])
+      end
+
+      it 'sender should be the default' do
+        expect(subject.from).to eq(['suporte@zeladoriaurbana.com.br'])
+      end
+
+      it 'should send correct welcome messages' do
+        expect(subject.body.encoded).to match('welcome message')
+      end
+
+      it 'should not send password' do
+        expect(subject.body.encoded).not_to match('<strong>Foi criada uma senha temporária para o seu cadastro: </strong>')
+      end
+
+      it 'should not notify to change the password' do
+        expect(subject.body.encoded).not_to match('Recomendamos que você entre em seu perfil imediatamente e altere a sua senha.')
+      end
     end
   end
 

@@ -19,7 +19,7 @@ class UserMailer < ZupMailer
     mail to: user.email, subject: 'Pedido de Recuperação de Senha', content_type: 'text/html'
   end
 
-  def send_user_random_password(user, password)
+  def welcome(user, password = nil)
     @user = user
     @password = password
 
