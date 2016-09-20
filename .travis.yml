@@ -4,7 +4,7 @@ language: python
 
 services:
   - docker
-  
+
 script:
   - ./build_and_test.sh build
   - ./build_and_test.sh rubocop
