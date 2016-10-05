@@ -1052,7 +1052,8 @@ CREATE TABLE group_permissions (
     manage_namespaces boolean DEFAULT false NOT NULL,
     namespaces_access integer[] DEFAULT '{}'::integer[],
     user_id integer,
-    manage_services boolean DEFAULT false NOT NULL
+    manage_services boolean DEFAULT false NOT NULL,
+    flow_can_change_cases_responsible integer[] DEFAULT '{}'::integer[]
 );
 
 
@@ -5033,3 +5034,4 @@ INSERT INTO schema_migrations (version) VALUES ('20160831172303');
 
 INSERT INTO schema_migrations (version) VALUES ('20160903172943');
 
+INSERT INTO schema_migrations (version) VALUES ('20161004163153');
