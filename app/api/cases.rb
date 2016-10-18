@@ -14,7 +14,8 @@ module Cases
         authenticate!
 
         initial_flow = Flow.find_initial(safe_params[:initial_flow_id])
-        initial_flow = initial_flow.the_version(nil, initial_flow.versions.last.id)
+        last_version_id = initial_flow.versions.last && initial_flow.versions.last.id
+        initial_flow = initial_flow.the_version(nil, last_version_id)
         step = initial_flow.get_new_step_to_case
 
         return error!(I18n.t(:flow_not_published), 400) if initial_flow.version.blank?

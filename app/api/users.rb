@@ -201,13 +201,12 @@ module Users
           user.groups << guest_group if guest_group
         end
 
-        if params[:generate_password]
-          password = user.generate_random_password!
-          UserMailer.delay.send_user_random_password(user, password)
-        end
+        password = user.generate_random_password! if params[:generate_password]
 
         user.namespace_id = params[:namespace_id] || app_namespace_id
         user.save!
+
+        UserMailer.delay.welcome(user, password)
 
         {
           message: 'Usuário criado com sucesso',

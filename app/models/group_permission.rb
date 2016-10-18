@@ -17,6 +17,7 @@ class GroupPermission < ActiveRecord::Base
       'flow_can_execute_all_steps' => [Flow, Array],
       'flow_can_delete_all_cases' => [Flow, Array],
       'flow_can_delete_own_cases' => [Flow, Array],
+      'flow_can_change_cases_responsible' => [Flow, Array]
     },
 
     step: {
@@ -130,6 +131,7 @@ class GroupPermission < ActiveRecord::Base
       flow_can_delete_own_cases
       flow_can_delete_all_cases
       flow_can_view_all_steps
+      flow_can_change_cases_responsible
       can_view_step
       can_execute_step
       manage_flows
