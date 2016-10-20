@@ -836,5 +836,29 @@ describe Search::Reports::Items::API do
         end
       end
     end
+
+    context 'paginate results' do
+      let!(:items) { create_list(:reports_item, 30, category: category) }
+
+      context 'with pagination' do
+        it 'returns the first 25 items (page 1)' do
+          get '/search/reports/items?per_page=25&page=1', nil, auth(user)
+          expect(response.status).to eq(200)
+
+          body = parsed_body['reports']
+          expect(body.size).to eq 25
+        end
+      end
+
+      context 'without pagination' do
+        it 'returns all items' do
+          get '/search/reports/items?disable_paginate=true', nil, auth(user)
+          expect(response.status).to eq(200)
+
+          body = parsed_body['reports']
+          expect(body.size).to eq 30
+        end
+      end
+    end
   end
 end
