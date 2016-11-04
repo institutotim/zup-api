@@ -51,6 +51,8 @@ module Search::Reports::Items
                desc: 'Perimeters ids, format: "1,2,3"'
       optional :groups_ids, type: String,
                desc: 'Assigned groups ids, format: "1,2,3"'
+      optional :disable_paginate, type: Boolean,
+               desc: 'Should paginate result or not'
     end
     get 'reports/items' do
       authenticate!
@@ -63,7 +65,7 @@ module Search::Reports::Items
         days_since_last_notification: [:begin, :end], days_for_last_notification_deadline: [:begin, :end]
       )
 
-      search_params[:paginator] = method(:paginate)
+      search_params[:paginator] = method(:paginate) unless safe_params[:disable_paginate]
       search_params[:position] = safe_params[:position]
 
       unless safe_params[:groups_ids].blank?
