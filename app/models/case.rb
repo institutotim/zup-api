@@ -39,6 +39,8 @@ class Case < ActiveRecord::Base
   # TODO: define "dependent" for each association
   has_many :steps, through: :case_steps
 
+  has_one :report_item, class_name: 'Reports::Item'
+
   accepts_nested_attributes_for :case_steps
 
   validates :created_by_id, :initial_flow_id, :namespace_id, presence: true
@@ -179,6 +181,16 @@ class Case < ActiveRecord::Base
       extract_options_for(key)
     end
 
+    def custom_fields(instance, _options = {})
+      report_item = instance.report_item
+
+      if report_item
+        report_item.custom_field_data.map { |f| [f.custom_field.title, f.value] }.to_h
+      else
+        Reports::CustomField.all.map { |f| [f.title, nil] }.to_h
+      end
+    end
+
     expose :id
     expose :created_by_id
     expose :updated_by_id
@@ -223,6 +235,9 @@ class Case < ActiveRecord::Base
     end
     expose :previous_steps do |instance, options|
       previous_steps(instance, change_options_to_return_fields(:steps, options))
+    end
+    expose :custom_fields do |instance, options|
+      custom_fields(instance, change_options_to_return_fields(:steps, options))
     end
   end
 end
