@@ -373,4 +373,22 @@ describe Groups::API do
       end
     end
   end
+
+  context 'POST /groups/:id/clone' do
+    let!(:group) { create(:group) }
+
+    it 'should clone the group' do
+      expect do
+        post "/groups/#{group.id}/clone", {}, auth(user)
+      end.to change(Group, :count).by(1)
+
+      expect(parsed_body['group']['name']).to eq "Cópia de #{group.name}"
+    end
+
+    it 'should clone the group with permissions' do
+      expect do
+        post "/groups/#{group.id}/clone", {}, auth(user)
+      end.to change(GroupPermission, :count).by(1)
+    end
+  end
 end

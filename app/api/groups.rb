@@ -307,6 +307,24 @@ module Groups
           )
         }
       end
+
+      desc 'Clone the group'
+      post ':id/clone' do
+        group = Group.find(safe_params[:id])
+
+        attrs = group.attributes.except('id', 'created_at', 'updated_at')
+        new_group = Group.new(attrs)
+        new_group.name.prepend('Cópia de ')
+
+        if group.permission
+          permission_params = group.permission.attributes.except('id', 'group_id')
+          new_group.build_permission(permission_params)
+        end
+
+        new_group.save!
+
+        { message: 'Group cloned successfully', group: Group::Entity.represent(new_group) }
+      end
     end
   end
 end
