@@ -3,8 +3,25 @@ class Version < PaperTrail::Version
     resource.versions.last.try(:reify)
   end
 
+  def self.clear_cached_objects
+    @cached_objects = {}
+  end
+
+  def self.find_in_cache(id)
+    @cached_objects ||= {}
+
+    object = @cached_objects[id]
+
+    unless object
+      object = find(id)
+      @cached_objects[id] = object
+    end
+
+    object
+  end
+
   def self.reify(id)
-    find(id).reify
+    find_in_cache(id).reify
   end
 
   def self.where(class_name, ids = {}, conditions = {})

@@ -7,6 +7,10 @@ class Namespace < ActiveRecord::Base
 
   validates :name, presence: true
 
+  def self.global_namespace_id
+    @global_namespace_id ||= default.first.try(:id)
+  end
+
   class Entity < Grape::Entity
     expose :id
     expose :name

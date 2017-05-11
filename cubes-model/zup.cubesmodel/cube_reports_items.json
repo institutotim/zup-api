@@ -15,6 +15,7 @@
     "assigned_user",
     "namespace",
     "user",
+    "solicitation",
     {
       "name": "group",
       "alias": "assigned_group"

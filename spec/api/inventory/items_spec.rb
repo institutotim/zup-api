@@ -380,6 +380,48 @@ describe Inventory::Items::API do
         end
       end
     end
+
+    context 'related inventories' do
+      let(:item_one) { create(:inventory_item, category: category)  }
+      let(:item_two) { create(:inventory_item, category: category)  }
+
+      let(:valid_params) do
+        {
+          inventory_ids: [item_one.id, item_two.id]
+        }
+      end
+
+      it 'adds a new item to relationship' do
+        put "/inventory/categories/#{category.id}/items/#{item.id}", valid_params, auth(user)
+
+        expect(response.status).to eq(200)
+        body = parsed_body['item']
+
+        returned_ids = body['inventories'].map { |i| i['id'] }
+
+        expect(returned_ids).to match_array([item_one.id, item_two.id])
+
+        expect(item_one.inventories.pluck(:id)).to include(item.id)
+        expect(item_two.inventories.pluck(:id)).to include(item.id)
+      end
+
+      it 'removes an existing item from relationship' do
+        valid_params[:inventory_ids].delete(item_two.id)
+
+        put "/inventory/categories/#{category.id}/items/#{item.id}", valid_params, auth(user)
+
+        expect(response.status).to eq(200)
+        body = parsed_body['item']
+
+        returned_ids = body['inventories'].map { |i| i['id'] }
+
+        expect(returned_ids).to include(item_one.id)
+        expect(returned_ids).to_not include(item_two.id)
+
+        expect(item_one.inventories.pluck(:id)).to include(item.id)
+        expect(item_two.inventories.pluck(:id)).to be_empty
+      end
+    end
   end
 
   context 'GET /inventory/items/:id' do

@@ -153,16 +153,16 @@ module Users
         optional :generate_password, type: Boolean, desc: 'Should the API generate a password for this user?'
 
         requires :name, type: String, desc: "User's name"
-        requires :phone, type: String, desc: 'Phone, only numbers'
+        optional :phone, type: String, desc: 'Phone, only numbers'
         optional :commercial_phone, type: String, desc: 'Phone, only numbers'
         optional :skype, type: String, desc: "User's skype username"
         requires :document, type: String, desc: "User's document (CPF), only numbers"
         optional :birthdate, type: Date, desc: "User's birthdate"
-        requires :address, type: String, desc: "User's address (with the number)"
+        optional :address, type: String, desc: "User's address (with the number)"
         optional :address_additional, type: String, desc: 'Address complement'
-        requires :postal_code, type: String, desc: 'CEP'
-        requires :district, type: String, desc: "User's neighborhood"
-        requires :city, type: String, desc: "User's city"
+        optional :postal_code, type: String, desc: 'CEP'
+        optional :district, type: String, desc: "User's neighborhood"
+        optional :city, type: String, desc: "User's city"
         optional :groups_ids, type: Array, desc: 'User groups'
 
         optional :institution, type: String, desc: "User's institution"

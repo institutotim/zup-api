@@ -15,6 +15,7 @@ namespace :feature_flags do
       reports
       show_resolution_time_to_clients
       show_answer_to_requester
+      reports_phraseology
     )
 
     flags.each do |flag|

@@ -1,8 +1,9 @@
 SIDEKIQ_USER = ENV['SIDEKIQ_USER'].freeze
 SIDEKIQ_PASSWORD = ENV['SIDEKIQ_PASSWORD'].freeze
+REDIS_NAMESPACE = ENV['REDIS_NAMESPACE'] || 'zup'
 
 Sidekiq.configure_server do |config|
-  config.redis = { url: ENV['REDIS_URL'] || 'redis://127.0.0.1:6379', namespace: 'zup' }
+  config.redis = { url: ENV['REDIS_URL'] || 'redis://127.0.0.1:6379', namespace: REDIS_NAMESPACE }
 
   # Sidekiq-cron Scheduler
   schedule_file = 'config/schedule.yml'
@@ -13,7 +14,7 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: ENV['REDIS_URL'] || 'redis://127.0.0.1:6379', namespace: 'zup' }
+  config.redis = { url: ENV['REDIS_URL'] || 'redis://127.0.0.1:6379', namespace: REDIS_NAMESPACE }
 end
 
 require 'sidekiq/rails'

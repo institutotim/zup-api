@@ -1,4 +1,4 @@
-class ImageUploader < CarrierWave::Uploader::Base
+class ImageUploader < BaseUploader
   include CarrierWave::MiniMagick
 
   version :high do

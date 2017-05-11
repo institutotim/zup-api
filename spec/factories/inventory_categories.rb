@@ -22,5 +22,9 @@ FactoryGirl.define do
         create_list(:inventory_section_with_fields, 3, category: category)
       end
     end
+
+    trait :deleted do
+      deleted_at 45.days.ago
+    end
   end
 end

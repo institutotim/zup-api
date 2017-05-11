@@ -197,17 +197,6 @@ class Flow < ActiveRecord::Base
     next_step_index && all_steps[next_step_index]
   end
 
-  # verificar se algum lugar usa
-  def find_my_step_form_on_tree(flow = self, step_id)
-    found_step = nil
-    flow.my_steps.each do |step|
-      found_step = step if step.id == step_id.to_i
-      found_step = find_my_step_form_on_tree(step.my_child_flow, step_id) if step.step_type == 'flow'
-      return found_step if found_step.present?
-    end
-    found_step if found_step.present?
-  end
-
   private
 
   def verify_if_has_resolution_state_default

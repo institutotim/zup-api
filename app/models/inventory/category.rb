@@ -3,8 +3,11 @@ class Inventory::Category < Inventory::Base
   include EncodedImageUploadable
   include PgSearch
   include NamespaceFilterable
+  include Deletable
 
-  scope :locked, -> { where(locked: true) }
+  scope :locked,  -> { where(locked: true) }
+  scope :active,  -> { where(deleted_at: nil) }
+  scope :deleted, -> { where.not(deleted_at: nil) }
 
   pg_search_scope :search_by_title, against: :title,
     using: { tsearch: { prefix: true } },
@@ -89,6 +92,7 @@ class Inventory::Category < Inventory::Base
     expose :locker, using: User::Entity
     expose :permissions
     expose :namespace, using: Namespace::Entity
+    expose :days_for_deletion
 
     with_options(if: { display_type: 'full' }) do
       expose :statuses, using: Inventory::Status::Entity

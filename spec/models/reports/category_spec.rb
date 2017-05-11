@@ -244,4 +244,22 @@ describe Reports::Category do
       end
     end
   end
+
+  context '#days_for_deletion' do
+    let(:category) { build(:reports_category) }
+
+    context 'deleted_at is nil' do
+      before { category.deleted_at = nil }
+      it 'should return nil' do
+        expect(category.days_for_deletion).to be_nil
+      end
+    end
+
+    context 'deleted_at is present' do
+      before { category.deleted_at = 3.days.ago }
+      it 'should return the correct number of days' do
+        expect(category.days_for_deletion).to eq(27)
+      end
+    end
+  end
 end

@@ -1,6 +1,6 @@
 God.watch do |w|
   w.name = 'Cubes Slicer Server'
-  w.start = "/bin/bash -c \"ps aux | grep slicer | grep -v \"grep\" | awk '{print $2}' | xargs kill -9 && slicer serve slicer.ini\""
+  w.start = "ps aux | grep slicer | grep -v \"grep\" | awk '{print $2}' | xargs kill -9 && slicer serve slicer.ini"
   w.dir = File.join(__dir__, 'cubes')
   w.log = File.join(__dir__, 'log', 'cubes.log')
   w.start_grace = 20.seconds
@@ -29,8 +29,8 @@ God.watch do |w|
       c.port = 8085
       c.path = '/info'
       c.code_is_not = 200
-      c.timeout = 5
-      c.interval = 5.seconds
+      c.timeout = 30
+      c.interval = 30.seconds
     end
   end
 end

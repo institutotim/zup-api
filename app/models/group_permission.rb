@@ -46,7 +46,8 @@ class GroupPermission < ActiveRecord::Base
       'manage_config' => Boolean,
       'panel_access' => Boolean,
       'view_categories' => Boolean,
-      'view_sections' => Boolean
+      'view_sections' => Boolean,
+      'event_logs_view' => Boolean
     },
 
     inventory: {
@@ -55,8 +56,10 @@ class GroupPermission < ActiveRecord::Base
       'inventories_items_delete' => [Inventory::Category, Array],
       'inventories_items_read_only' => [Inventory::Category, Array],
       'inventories_categories_edit' => [Inventory::Category, Array],
+      'inventories_items_export' => Boolean,
       'inventories_formulas_full_access' => Boolean,
-      'inventories_full_access' => Boolean
+      'inventories_full_access' => Boolean,
+      'inventories_items_group' => Boolean
     },
 
     report: {
@@ -72,6 +75,8 @@ class GroupPermission < ActiveRecord::Base
       'reports_items_send_notification' => [Reports::Category, Array],
       'reports_items_restart_notification' => [Reports::Category, Array],
       'reports_categories_edit' => [Reports::Category, Array],
+      'reports_items_export' => Boolean,
+      'reports_items_group' => Boolean,
       'reports_full_access' => Boolean,
       'manage_reports_categories' => Boolean
     },
@@ -114,6 +119,8 @@ class GroupPermission < ActiveRecord::Base
       reports_items_alter_status
       reports_items_send_notification
       reports_items_restart_notification
+      reports_items_export
+      reports_items_group
       reports_categories_edit
       manage_reports_categories
       inventories_items_read_only
@@ -126,6 +133,7 @@ class GroupPermission < ActiveRecord::Base
       inventory_fields_can_view
       inventory_sections_can_edit
       inventory_sections_can_view
+      inventories_items_group
       flow_can_execute_all_steps
       flow_can_delete_own_cases
       flow_can_delete_all_cases
@@ -143,6 +151,7 @@ class GroupPermission < ActiveRecord::Base
       cases_with_reports_view
       manage_namespaces
       namespaces_access
+      event_logs_view
     )
   end
 end

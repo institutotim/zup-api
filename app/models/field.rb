@@ -12,6 +12,8 @@ class Field < ActiveRecord::Base
   belongs_to :user # who created the Field
   belongs_to :step
   has_many :case_step_fields
+  belongs_to :category_inventory_field, class_name: 'Inventory::Field',
+             foreign_key: :origin_field_id
 
   default_scope -> { order(id: :asc) }
   scope :active,    -> { where(active: true) }
@@ -44,7 +46,9 @@ class Field < ActiveRecord::Base
   end
 
   def category_inventory
-    Inventory::Category.where(id: category_inventory_id)
+    Inventory::Category.includes(
+      :namespace, :statuses, sections: [fields: :field_options]
+    ).where(id: category_inventory_id)
   end
 
   def category_report
@@ -103,7 +107,7 @@ class Field < ActiveRecord::Base
   def previous_field_step_id
     return if field_type != 'previous_field'
     field = origin_field_version.blank? ? Field.find_by(id: origin_field_id) : Version.reify(origin_field_version)
-    field.step.id
+    field.step.try(:id)
   end
 
   def set_origin_field_version
@@ -116,7 +120,7 @@ class Field < ActiveRecord::Base
 
   def category_inventory_field
     return if field_type != 'inventory_field'
-    Inventory::Field.find(origin_field_id)
+    super
   end
 
   def add_field_to_step_field_versions!

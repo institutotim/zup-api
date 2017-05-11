@@ -95,16 +95,27 @@ module Search::Reports::Items
 
       results = Reports::SearchItems.new(current_user, search_params).search
 
+      # If the param for return fields isn't nil, lets put some:
+      if return_fields.blank?
+        rfields = ReturnFieldsParams.new(
+          'id,status_id,category_id,overdue,protocol,category.priority_pretty,address,' + \
+          'user.id,user.name,reporter.id,reporter.name,category.title,assigned_group.name,' + \
+          'assigned_group.title,assigned_user.name,assigned_user.id,created_at&sort=created_at'
+        ).to_array
+      else
+        rfields = return_fields
+      end
+
       if safe_params[:clusterize]
         header('Total', results[:total].to_s)
 
         {
-          reports: Reports::Item::Entity.represent(results[:reports], only: return_fields, display_type: safe_params[:display_type]),
+          reports: Reports::Item::Entity.represent(results[:reports], only: rfields, display_type: safe_params[:display_type]),
           clusters: ClusterizeItems::Cluster::Entity.represent(results[:clusters])
         }
       else
         {
-          reports: Reports::Item::Entity.represent(results, only: return_fields,
+          reports: Reports::Item::Entity.represent(results, only: rfields,
                                                    display_type: safe_params[:display_type],
                                                    user: current_user)
         }

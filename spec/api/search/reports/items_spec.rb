@@ -450,9 +450,10 @@ describe Search::Reports::Items::API do
 
       it 'returns the correct items with the correct document' do
         get '/search/reports/items', valid_params, auth(user)
-        expect(parsed_body['reports'].map do |r|
-          r['id']
-        end).to match_array(correct_items.map(&:id))
+
+        expected_ids = parsed_body['reports'].map { |r| r['id'] }
+
+        expect(expected_ids).to match_array(correct_items.map(&:id))
       end
     end
 
@@ -834,6 +835,21 @@ describe Search::Reports::Items::API do
           expect(response.status).to eq(200)
           expect(parsed_body['reports'].map { |r| r['id'] }).to match_array(correct_items.map(&:id))
         end
+      end
+    end
+
+    describe 'return only reports item from active categories' do
+      let(:marked_category) { create(:reports_category_with_statuses, :deleted) }
+      let!(:item)           { create(:reports_item, category: marked_category) }
+
+      it 'return the correct items' do
+        get '/search/reports/items', nil, auth(user)
+
+        expect(response.status).to eq(200)
+
+        returned_ids = parsed_body['reports'].map { |r| r['id'] }
+
+        expect(returned_ids).to_not include(item.id)
       end
     end
   end

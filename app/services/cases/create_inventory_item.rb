@@ -83,7 +83,7 @@ module Cases
 
     def set_ids_for_inventory_item_fields!
       case_step.case_step_data_fields.each do |csdf|
-        if csdf.field.field_type == 'inventory_item'
+        if csdf.field.field_type == 'inventory_item' && csdf.inventory_item
           csdf.value = "[#{csdf.inventory_item.id}]"
         end
       end

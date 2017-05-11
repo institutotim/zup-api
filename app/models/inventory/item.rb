@@ -21,25 +21,43 @@ class Inventory::Item < Inventory::Base
   belongs_to :status, class_name: 'Inventory::Status', foreign_key: 'inventory_status_id'
   belongs_to :locker, class_name: 'User'
 
-  has_many :data, class_name: 'Inventory::ItemData',
-                  foreign_key: 'inventory_item_id',
-                  autosave: true,
-                  dependent: :destroy
+  has_many :data,
+    class_name: 'Inventory::ItemData',
+    foreign_key: 'inventory_item_id',
+    autosave: true,
+    dependent: :destroy
 
-  has_many :fields, class_name: 'Inventory::Field',
-                    through: :category
+  has_many :fields,
+    class_name: 'Inventory::Field',
+    through: :category
 
-  has_many :field_options, class_name: 'Inventory::FieldOption',
-                     through: :fields
+  has_many :field_options,
+    class_name: 'Inventory::FieldOption',
+    through: :fields
 
-  has_many :selected_options, class_name: 'Inventory::FieldOption',
-                     through: :data,
-                     source: :option
-  has_many :histories, class_name: 'Inventory::ItemHistory',
-                       foreign_key: 'inventory_item_id',
-                       dependent: :destroy
-  has_many :images, class_name: 'Inventory::ItemDataImage',
-                    through: :data
+  has_many :selected_options,
+    class_name: 'Inventory::FieldOption',
+    through: :data,
+    source: :option
+
+  has_many :histories,
+    class_name: 'Inventory::ItemHistory',
+    foreign_key: 'inventory_item_id',
+    dependent: :destroy
+
+  has_many :images,
+    class_name: 'Inventory::ItemDataImage',
+    through: :data
+
+  has_many :relationships,
+    class_name: 'Inventory::ItemRelationship',
+    foreign_key: :inventory_item_id,
+    dependent: :destroy
+
+  has_many :inventories,
+    class_name: 'Inventory::Item',
+    through: :relationships,
+    source: :inventory
 
   before_validation :update_position_from_data
   before_validation :generate_title
@@ -50,6 +68,22 @@ class Inventory::Item < Inventory::Base
   validates :status, presence: true, if: :must_have_status?
 
   validate_in_boundary :position
+
+  def inventory_ids=(new_ids)
+    new_ids = Array(new_ids)
+
+    to_add = new_ids - inventory_ids
+    to_delete = inventory_ids - new_ids
+
+    if to_delete.any?
+      relationships.where(inventory_item_id: id, relationship_id: to_delete)
+                   .destroy_all
+    end
+
+    to_add.each do |new_id|
+      relationships.create(inventory_item_id: id, relationship_id: new_id)
+    end
+  end
 
   def location
     @location ||= Hash[
@@ -106,6 +140,7 @@ class Inventory::Item < Inventory::Base
       expose :category, using: Inventory::Category::Entity
     end
 
+    expose :inventories, using: 'Inventory::Item::ListingEntity'
     expose :inventory_category_id
     expose :data, unless: { collection: true }
     expose :created_at
@@ -128,6 +163,17 @@ class Inventory::Item < Inventory::Base
 
       Inventory::ItemData::Entity.represent(objects, options)
     end
+  end
+
+  class ListingEntity < Entity
+    expose :status,   using: Inventory::Status::Entity
+    expose :user,     using: User::Entity
+    expose :category, using: Inventory::Category::Entity
+
+    unexpose :related_entities
+    unexpose :position
+    unexpose :inventories
+    unexpose :data
   end
 
   # Data with Inventory::ItemDataRepresenter

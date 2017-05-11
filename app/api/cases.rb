@@ -61,7 +61,7 @@ module Cases
         sort  ||= 'id'
 
         if 'resolution_state'.eql?(sort)
-          kases = Case.joins(:resolution_state, :case_steps, :steps, :initial_flow, :namespace).order("resolution_states.title #{order.upcase}")
+          kases = Case.order("resolution_states.title #{order.upcase}")
         else
           kases = Case.order(sort => order.to_sym)
         end
@@ -105,6 +105,7 @@ module Cases
           params[:cases_visible] = user_permissions.cases_visible
         end
 
+        kases = kases.includes(:resolution_state, :steps, :initial_flow, :namespace, case_steps: :case_step_data_fields)
         kases = paginate(kases)
 
         garner.bind(
@@ -132,7 +133,10 @@ module Cases
         end
         get do
           authenticate!
-          kase = Case.not_inactive.find(safe_params[:id])
+          kase = Case.not_inactive.includes(
+                                    case_steps: [{ case_step_data_fields: { field: { category_inventory_field: :field_options } } },
+                                                 :created_by, :updated_by, :responsible_user, :responsible_group]
+                                  ).find(safe_params[:id])
           validate_permission!(:show, kase)
 
           { case: Case::Entity.represent(kase, only: return_fields, display_type: safe_params[:display_type],

@@ -1,4 +1,4 @@
-class IconUploader < CarrierWave::Uploader::Base
+class IconUploader < BaseUploader
   include CarrierWave::MiniMagick
 
   BASE_FILE = 'public/base/bola_categoria_relato_base@2x.png'

@@ -143,6 +143,7 @@ class UserAbility
     chat_rooms_permissions
     namespaces_permissions
     services_permission
+    event_logs_permissions
   end
 
   def painel_permissions
@@ -198,6 +199,11 @@ class UserAbility
     if permissions.reports_full_access
       can :manage, Reports::Category
       can :manage, Reports::Item
+      can :manage, Export
+    end
+
+    if permissions.reports_items_group
+      can :group, Reports::Item
     end
 
     can [:edit, :view], Reports::Category do |category|
@@ -236,7 +242,9 @@ class UserAbility
     end
 
     can :forward, Reports::Item do |report|
-      permissions.reports_items_forward.include?(report.reports_category_id)
+      permissions.reports_items_forward.include?(report.reports_category_id) ||
+      permissions.reports_items_edit.include?(report.reports_category_id) ||
+      permissions.reports_categories_edit.include?(report.reports_category_id)
     end
 
     can :alter_status, Reports::Item do |report|
@@ -271,6 +279,14 @@ class UserAbility
         permissions.reports_items_edit.include?(report.reports_category_id) ||
         permissions.reports_full_access
     end
+
+    if permissions.reports_items_group
+      can :group, Reports::Item
+    end
+
+    if permissions.reports_items_export
+      can :export_reports, Export
+    end
   end
 
   def inventories_permissions
@@ -279,6 +295,7 @@ class UserAbility
       can :manage, Inventory::Field
       can :manage, Inventory::Section
       can :manage, Inventory::Item
+      can :manage, Export
     end
 
     if permissions.inventories_formulas_full_access
@@ -328,6 +345,10 @@ class UserAbility
       permissions.inventories_categories_edit.include?(inventory_item.inventory_category_id)
     end
 
+    if permissions.inventories_items_group
+      can :group, Inventory::Item
+    end
+
     # Inventory sections permissions
     can [:view, :edit], Inventory::Section do |inventory_section|
       permissions.inventory_sections_can_edit.include?(inventory_section.id)
@@ -344,6 +365,10 @@ class UserAbility
 
     can :view, Inventory::Field do |inventory_field|
       permissions.inventory_fields_can_view.include?(inventory_field.id)
+    end
+
+    if permissions.inventories_items_export
+      can :export_inventories, Export
     end
   end
 
@@ -453,6 +478,12 @@ class UserAbility
 
     can :show, Namespace do |namespace|
       namespaces_visible.include?(namespace.id) || namespace.default?
+    end
+  end
+
+  def event_logs_permissions
+    if permissions.event_logs_view
+      can :view, EventLog
     end
   end
 end

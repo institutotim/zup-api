@@ -65,6 +65,7 @@ pt-BR:
   reports_categories: Categoria de Relato
   inventory_items: Item de inventário
   inventory_categories: Categoria de Inventário
+  event_logs: Logs
   permission_type_not_included: Tipo de permissão inválido
   permissions_updated: Permissões atualizadas com sucesso
   step_is_disabled: A Etapa está desabilitada
@@ -95,6 +96,7 @@ pt-BR:
   resolution_state_created: Estado de Resolução criado com sucesso
   resolution_state_updated: Estado de Resolução atualizado com sucesso
   resolution_state_deleted: Estado de Resolução apagado com sucesso
+  reports_category_restored: Categoria de relato recuperada com sucesso
   steps: Etapas
   step_not_found: Etapa não encontrada
   step_created: Etapa criada com sucesso
@@ -397,6 +399,6 @@ pt-BR:
     am: ''
     formats:
       default: ! '%a, %d de %B de %Y, %H:%M:%S %z'
-      long: ! '%d de %B de %Y, %H:%M'
+      long: ! '%d/%m/%Y %H:%M:%S'
       short: ! '%d de %B, %H:%M'
     pm: ''

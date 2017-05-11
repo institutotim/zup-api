@@ -19,8 +19,8 @@ module Reports
         item.protocol
       end,
       'item_images' => lambda do |item, _notification|
-        images = item.images_structure.reduce('<div class="report-image">') do |acc, img|
-          "#{acc}<img class=\"report-image\" src=\"#{img[:high]}\" />"
+        images = item.images.reduce('<div class="report-image">') do |acc, img|
+          %[#{acc}<img class="report-image" src="#{img.image_url(:high)}" />]
         end
 
         "#{images}</div>"

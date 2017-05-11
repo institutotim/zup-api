@@ -104,6 +104,21 @@ module Reports::Categories
         }
       end
 
+      desc 'List all deleted reports categories'
+      get 'deleted' do
+        authenticate!
+        validate_permission!(:manage, Reports::Category)
+
+        categories = Reports::Category.deleted
+
+        {
+          categories: Reports::Category::Entity.represent(
+            categories,
+            only: return_fields
+          )
+        }
+      end
+
       desc 'Return information about the given category'
       params do
         requires :id, type: Integer, desc: 'The report category ID'
@@ -195,11 +210,24 @@ module Reports::Categories
 
         category = Reports::Category.find(params[:id])
         validate_permission!(:delete, category)
-        category.destroy
+        category.delete
 
         Garner.config.cache.delete_matched('reports/category*')
 
         status 204
+      end
+
+      desc 'Restore a report category'
+      put ':id/restore' do
+        authenticate!
+
+        category = Reports::Category.find(params[:id])
+        validate_permission!(:manage, Reports::Category)
+        category.restore
+
+        Garner.config.cache.delete_matched('reports/category*')
+
+        { message: I18n.t(:reports_category_restored) }
       end
     end
   end

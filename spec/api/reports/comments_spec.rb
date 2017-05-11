@@ -97,6 +97,17 @@ describe Reports::Comments do
         expect(created_comment.message).to eq('Test message')
         expect(created_comment.visibility).to eq(Reports::Comment::PUBLIC)
       end
+
+      it 'replicate to grouped reports' do
+        valid_params[:replicate] = true
+        allow_any_instance_of(Reports::Comment).to receive(:id) { 10000 }
+
+        expect(CopyToReportsItems).to receive(:perform_async).with(user.id,
+          item.id, 'comment', comment_id: 10000)
+
+        subject
+        expect(response.status).to eq(201)
+      end
     end
 
     context 'when user hasn\'t permissions to create private comments' do

@@ -393,13 +393,46 @@ describe Reports::Categories::API do
   end
 
   context 'DELETE /reports/categories/:id' do
-    let(:category) { create(:inventory_category) }
+    let(:category) { create(:reports_category_with_statuses) }
 
     it 'destroys a reports category' do
-      category = create(:reports_category_with_statuses)
       delete "/reports/categories/#{category.id}", nil, auth(user)
       expect(response.status).to eq(204)
-      expect(Reports::Category.find_by(id: category.id)).to be_nil
+
+      category.reload
+      expect(category.deleted_at).to_not be_nil
+
+      expect(Reports::Category.active.find_by(id: category.id)).to be_nil
+    end
+  end
+
+  context 'PUT /reports/categories/:id/restore' do
+    let(:category) { create(:reports_category_with_statuses, :deleted) }
+
+    it 'restores a reports category' do
+      put "/reports/categories/#{category.id}/restore", nil, auth(user)
+
+      expect(response.status).to eq(200)
+      expect(parsed_body['message']).to eq('Categoria de relato recuperada com sucesso')
+
+      category.reload
+      expect(category.deleted_at).to be_nil
+    end
+  end
+
+  context 'GET /reports/categories/deleted' do
+    let!(:deleted_category) { create(:reports_category_with_statuses, :deleted) }
+    let!(:category)         { create(:reports_category_with_statuses) }
+
+    it 'returns all deleted report categories' do
+      get '/reports/categories/deleted', nil, auth(user)
+
+      expect(response.status).to eq(200)
+
+      returned_ids = parsed_body['categories'].map { |c| c['id'] }
+
+      expect(returned_ids).to include(deleted_category.id)
+      expect(returned_ids).to_not include(category.id)
     end
   end
 end

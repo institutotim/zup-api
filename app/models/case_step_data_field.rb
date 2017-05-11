@@ -101,7 +101,9 @@ class CaseStepDataField < ActiveRecord::Base
     expose :id
     expose :field, using: Field::Entity
     expose :value do |data_field|
-      if data_field.value
+      if data_field.value == '[nil]'
+        []
+      elsif data_field.value
         data_field.value.match(/^\[.*\]$/) || data_field.value.match(/^\{.*\}$/) ? JSON.parse(data_field.value) : data_field.value
       end
     end

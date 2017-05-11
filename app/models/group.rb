@@ -28,9 +28,7 @@ class Group < ActiveRecord::Base
 
   def self.that_includes_permission(permission_name, id, namespace_id = nil)
     query = includes(:permission)
-    if namespace_id
-      query = query.where(namespace_id: namespace_id)
-    end
+    query = query.where(namespace_id: namespace_id) if namespace_id
     query.select do |group|
       group.permission.send(permission_name).include?(id)
     end

@@ -39,6 +39,7 @@ FactoryGirl.define do
       business_reports_edit true
       business_reports_view [27]
       manage_services true
+      event_logs_view true
     end
 
     factory :admin_permissions do
@@ -55,6 +56,7 @@ FactoryGirl.define do
       manage_namespaces true
       manage_chat_rooms true
       manage_services true
+      event_logs_view true
     end
   end
 end

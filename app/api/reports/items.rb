@@ -35,6 +35,9 @@ module Reports::Items
                desc: 'If the report is coming from the panel this should be true'
       optional :custom_fields, type: Hash,
                desc: 'The custom fields hash, id as key and value'
+      optional :origin, type: String, default: 'panel',
+              values: ['panel', 'app_android', 'app_ios', 'app_technical', 'web'],
+              desc: 'The origin of the request'
     end
     post ':category_id/items' do
       authenticate!
@@ -42,7 +45,7 @@ module Reports::Items
 
       report_params = safe_params.permit(
         :description, :address, :reference, :confidential, :district,
-        :number, :postal_code, :city, :state, :country
+        :number, :postal_code, :city, :state, :country, :origin
       )
 
       report_params.merge!(
@@ -272,6 +275,11 @@ module Reports::Items
         SendReportThroughWebhook.perform_async(item.uuid, action)
       end
 
+      # Ungroup report when category is changed
+      if item.grouped?
+        Reports::GroupItems.new(current_user, item).ungroup!
+      end
+
       {
         report: Reports::Item::Entity.represent(
           item, display_type: 'full', user: current_user, only: return_fields
@@ -285,6 +293,8 @@ module Reports::Items
                desc: 'The id of the new group'
       optional :comment, type: String,
                desc: 'The comment to be created'
+      optional :replicate, type: Boolean, default: false,
+               desc: 'Replicate the change to grouped reports'
     end
     put ':reports_category_id/items/:id/forward' do
       authenticate!
@@ -300,6 +310,11 @@ module Reports::Items
       service = Reports::ForwardToGroup.new(item, current_user)
       service.forward!(group, comment)
 
+      if params[:replicate]
+        CopyToReportsItems.perform_async(current_user.id, item.id, 'group',
+          comment: comment)
+      end
+
       {
         report: Reports::Item::Entity.represent(
           item, display_type: 'full', user: current_user, only: return_fields
@@ -311,6 +326,8 @@ module Reports::Items
     params do
       optional :user_id, type: Integer,
                desc: 'The id of the user assignee'
+      optional :replicate, type: Boolean, default: false,
+               desc: 'Replicate the change to grouped reports'
     end
     put ':reports_category_id/items/:id/assign' do
       authenticate!
@@ -319,10 +336,14 @@ module Reports::Items
       user = User.find(params[:user_id])
       item = Reports::Item.find_by!(id: params[:id], reports_category_id: category.id)
 
-      validate_permission!(:edit, item)
+      validate_permission!(:forward, item)
 
       # Forward to another group
       service = Reports::AssignToUser.new(item, current_user).assign!(user)
+
+      if params[:replicate]
+        CopyToReportsItems.perform_async(current_user.id, item.id, 'user')
+      end
 
       {
         report: Reports::Item::Entity.represent(
@@ -341,6 +362,8 @@ module Reports::Items
                desc: '0 = Public, 1 = Private'
       optional :case_conductor_id, type: Integer,
                desc: 'The user id to create the case, if it exists'
+      optional :replicate, type: Boolean, default: false,
+               desc: 'Replicate the change to grouped reports'
     end
     put ':reports_category_id/items/:id/update_status' do
       authenticate!
@@ -365,6 +388,11 @@ module Reports::Items
 
       if Webhook.enabled?
         SendReportThroughWebhook.perform_async(item.uuid, 'update')
+      end
+
+      if params[:replicate]
+        CopyToReportsItems.perform_async(current_user.id, item.id, 'status',
+          comment: comment, visibility: comment_visibility)
       end
 
       options = { display_type: 'full', user: current_user, only: return_fields }

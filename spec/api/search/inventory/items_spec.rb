@@ -25,6 +25,20 @@ describe Search::Inventory::Items::API do
       end
     end
 
+    context 'return only inventories from active categories' do
+      let(:deleted_category) { create(:inventory_category, :deleted) }
+      let!(:inventory)       { create(:inventory_item, category: deleted_category) }
+
+      it 'return the correct items' do
+        get '/search/inventory/items', nil, auth(user)
+
+        expect(response.status).to eq(200)
+
+        returned_ids = parsed_body['items'].map { |r| r['id'] }
+        expect(returned_ids).to_not include(inventory.id)
+      end
+    end
+
     context 'filtered by permission' do
       let!(:items) { create_list(:inventory_item, 3, category: category) }
       let!(:other_category) { create(:inventory_category_with_sections) }

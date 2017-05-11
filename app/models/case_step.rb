@@ -169,7 +169,12 @@ class CaseStep < ActiveRecord::Base
 
   def convert_field_data(data)
     return data unless data.is_a? String
-    data =~ /^\[.*\]$/ || data =~ /^\{.*\}$/ ? JSON.parse(data) : data
+
+    if data == '[nil]'
+      []
+    else
+      (data =~ /^\[.*\]$/ || data =~ /^\{.*\}$/) ? JSON.parse(data) : data
+    end
   end
 
   def errors_add(name, error_type, *options)

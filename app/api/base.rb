@@ -78,7 +78,7 @@ module Base
 
           def app_namespace_id
             @app_namespace_id ||= headers['X-App-Namespace'] || env['X-App-Namespace'] ||
-              params[:namespace] || params[:namespace_id]
+              params[:namespace] || params[:namespace_id] || Namespace.global_namespace_id
           end
 
           def skip_namespace_endpoints
@@ -130,7 +130,7 @@ module Base
           end
 
           def current_namespace
-            @current_namespace ||= Namespace.find(app_namespace_id)
+            @current_namespace ||= Namespace.find_by(id: app_namespace_id)
           end
 
           def authenticate!

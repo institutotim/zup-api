@@ -138,8 +138,7 @@ describe Inventory::Categories::API do
         {
           "title": "A COOLER NAME!",
           "description": "A COOLER DESCRIPTION!",
-          "require_item_status": true,
-          "namespace_id": #{user.namespace_id}
+          "require_item_status": true
         }
       JSON
     end
@@ -154,7 +153,6 @@ describe Inventory::Categories::API do
       expect(category.title).to eq('A COOLER NAME!')
       expect(category.description).to eq('A COOLER DESCRIPTION!')
       expect(category.require_item_status).to eq(true)
-      expect(category.namespace_id).to eq(user.namespace_id)
     end
 
     it "return error messages if record doesn't exists" do
@@ -275,8 +273,43 @@ describe Inventory::Categories::API do
       delete "/inventory/categories/#{category.id}", nil, auth(user)
       expect(response.status).to eq(200)
       expect(parsed_body).to include('message')
-      expect(Inventory::Category.find_by(id: category.id)).to be_nil
+
+      category.reload
+
+      expect(category.deleted_at).to_not be_nil
+      expect(Inventory::Category.active.find_by(id: category.id)).to be_nil
     end
+  end
+
+  context 'PUT /inventory/categories/:id/restore' do
+    let(:category) { create(:inventory_category, :deleted) }
+
+    it 'restores the category' do
+      put "/inventory/categories/#{category.id}/restore", nil, auth(user)
+      expect(response.status).to eq(200)
+      expect(parsed_body).to include('message')
+
+      category.reload
+
+      expect(category.deleted_at).to be_nil
+      expect(Inventory::Category.deleted.find_by(id: category.id)).to be_nil
+    end
+  end
+
+  context 'GET /inventory/categories/deleted' do
+   let!(:deleted_category) { create(:inventory_category, :deleted) }
+   let!(:category)         { create(:inventory_category) }
+
+   it 'returns all deleted inventory categories' do
+     get '/inventory/categories/deleted', nil, auth(user)
+
+     expect(response.status).to eq(200)
+
+     returned_ids = parsed_body['categories'].map { |c| c['id'] }
+
+     expect(returned_ids).to include(deleted_category.id)
+     expect(returned_ids).to_not include(category.id)
+   end
   end
 
   context 'PUT /inventory/categories/:id/form' do

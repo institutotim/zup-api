@@ -35,4 +35,18 @@ namespace :inventory_fields do
       end
     end
   end
+
+  task generate_titles: :environment do
+    Inventory::Field.find_each do |field|
+      next unless field.label
+
+      if field.section.location?
+        field.title = field.label.unaccented.downcase.gsub(/\W/, '_')
+      else
+        field.send(:generate_title)
+      end
+
+      field.save
+    end
+  end
 end

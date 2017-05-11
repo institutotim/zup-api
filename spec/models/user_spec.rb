@@ -20,8 +20,7 @@ describe User do
 
     context 'default (without from_webhook)' do
       describe 'presence' do
-        [:name, :email, :encrypted_password, :phone, :document, :address,
-          :postal_code, :district, :city, :namespace].each do |field|
+        [:name, :email, :document, :namespace].each do |field|
           it { should validate_presence_of(field) }
         end
       end
