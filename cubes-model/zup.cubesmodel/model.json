@@ -50,6 +50,7 @@
         { "name": "user", "template": "user", "label": "Solicitante" },
         { "name": "reporter", "template": "user", "alias": "reporter", "label": "Autor" },
         { "name": "assigned_user", "template": "user", "alias": "assigned_user", "label": "Usuário responsável" },
+        { "name": "solicitation", "label": "Tipo de Solicitação" },
 
         { "name": "cases_created_by", "template": "user", "label": "Criador do caso" },
         { "name": "cases_updated_by", "template": "user", "label": "Último usuário que atualizou" },

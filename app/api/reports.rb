@@ -15,6 +15,10 @@ module Reports
       mount Reports::Perimeters::API
       mount Reports::CategoryPerimeters::API
       mount Reports::CustomFields::API
+      mount Reports::Phraseologies::API
+      mount Reports::Groups::API
+      mount Reports::Suggestions::API
+      mount Reports::Images::API
     end
   end
 end

@@ -155,464 +155,6 @@ ALTER SEQUENCE access_keys_id_seq OWNED BY access_keys.id;
 
 
 --
--- Name: fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE fields (
-    id integer NOT NULL,
-    title character varying(255),
-    field_type character varying(255),
-    category_inventory_id integer[] DEFAULT '{}'::integer[],
-    category_report_id integer[] DEFAULT '{}'::integer[],
-    origin_field_id integer,
-    active boolean DEFAULT true,
-    step_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    multiple boolean DEFAULT false,
-    filter character varying(255),
-    requirements hstore,
-    user_id integer,
-    origin_field_version integer,
-    draft boolean DEFAULT true,
-    "values" character varying(255)[] DEFAULT '{}'::character varying[],
-    field_id integer
-);
-
-
---
--- Name: bi_case_fields; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_case_fields AS
- SELECT fields.id,
-    fields.title AS label
-   FROM fields
-  WHERE ((fields.field_type)::text = ANY ((ARRAY['radio'::character varying, 'checkbox'::character varying, 'select'::character varying, 'date'::character varying, 'years'::character varying, 'months'::character varying, 'days'::character varying, 'hours'::character varying, 'seconds'::character varying, 'angle'::character varying, 'time'::character varying, 'integer'::character varying, 'decimal'::character varying, 'centimeters'::character varying, 'kilometers'::character varying])::text[]));
-
-
---
--- Name: case_step_data_fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE case_step_data_fields (
-    id integer NOT NULL,
-    case_step_id integer NOT NULL,
-    field_id integer NOT NULL,
-    value text
-);
-
-
---
--- Name: case_steps; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE case_steps (
-    id integer NOT NULL,
-    case_id integer,
-    step_id integer,
-    step_version integer DEFAULT 1,
-    created_by_id integer,
-    updated_by_id integer,
-    trigger_ids integer[] DEFAULT '{}'::integer[],
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    responsible_user_id integer,
-    responsible_group_id integer
-);
-
-
---
--- Name: bi_case_fields_data; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_case_fields_data AS
- SELECT csdf.id,
-    cs.case_id,
-    csdf.field_id,
-    json_array_elements_text((csdf.value)::json) AS value
-   FROM ((case_step_data_fields csdf
-     JOIN fields f ON ((csdf.field_id = f.id)))
-     JOIN case_steps cs ON ((csdf.case_step_id = cs.id)))
-  WHERE ((f.field_type)::text = 'checkbox'::text)
-UNION
- SELECT csdf.id,
-    cs.case_id,
-    csdf.field_id,
-    csdf.value
-   FROM ((case_step_data_fields csdf
-     JOIN fields f ON ((csdf.field_id = f.id)))
-     JOIN case_steps cs ON ((csdf.case_step_id = cs.id)))
-  WHERE ((f.field_type)::text = ANY ((ARRAY['radio'::character varying, 'select'::character varying, 'date'::character varying, 'years'::character varying, 'months'::character varying, 'days'::character varying, 'hours'::character varying, 'seconds'::character varying, 'angle'::character varying, 'time'::character varying, 'integer'::character varying, 'decimal'::character varying, 'centimeters'::character varying, 'kilometers'::character varying])::text[]));
-
-
---
--- Name: steps; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE steps (
-    id integer NOT NULL,
-    title character varying(255),
-    description text,
-    step_type character varying(255),
-    flow_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    active boolean DEFAULT true,
-    child_flow_id integer,
-    child_flow_version integer,
-    conduction_mode_open boolean DEFAULT true,
-    draft boolean DEFAULT true,
-    user_id integer,
-    fields_versions json DEFAULT '{}'::json,
-    triggers_versions json DEFAULT '{}'::json
-);
-
-
---
--- Name: bi_case_latest_step; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_case_latest_step AS
- SELECT s.id,
-    s.case_id,
-    s.step_id,
-    s.title,
-    s.step_rank
-   FROM ( SELECT cs.id,
-            cs.case_id,
-            cs.step_id,
-            s_1.title,
-            rank() OVER (PARTITION BY cs.case_id ORDER BY cs.created_at DESC) AS step_rank
-           FROM (case_steps cs
-             JOIN steps s_1 ON ((cs.step_id = s_1.id)))) s
-  WHERE (s.step_rank = 1);
-
-
---
--- Name: cases; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE cases (
-    id integer NOT NULL,
-    created_by_id integer NOT NULL,
-    updated_by_id integer,
-    responsible_user integer,
-    responsible_group integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    initial_flow_id integer NOT NULL,
-    flow_version integer DEFAULT 1,
-    status character varying(255) DEFAULT 'active'::character varying,
-    disabled_steps integer[] DEFAULT '{}'::integer[],
-    resolution_state_id integer,
-    original_case_id integer,
-    old_status character varying(255),
-    source_reports_category_id integer,
-    namespace_id integer
-);
-
-
---
--- Name: bi_cases; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_cases AS
- SELECT c.id,
-    cs.latest_executed_step_id,
-    c.namespace_id,
-    c.created_by_id,
-    c.updated_by_id,
-    c.status,
-    c.initial_flow_id,
-    c.responsible_user,
-    c.source_reports_category_id,
-    c.resolution_state_id
-   FROM cases c,
-    LATERAL ( SELECT case_steps.step_id AS latest_executed_step_id
-           FROM case_steps
-          WHERE (case_steps.case_id = c.id)
-          ORDER BY case_steps.created_at DESC
-         LIMIT 1) cs
-  WHERE ((c.status)::text <> 'inactive'::text);
-
-
---
--- Name: inventory_fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE inventory_fields (
-    id integer NOT NULL,
-    title character varying(255),
-    kind character varying(255),
-    size character varying(255),
-    "position" integer,
-    inventory_section_id integer,
-    options hstore,
-    permissions hstore,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    required boolean DEFAULT false NOT NULL,
-    maximum integer,
-    minimum integer,
-    available_values character varying(255)[],
-    disabled boolean DEFAULT false,
-    use_as_title boolean DEFAULT false
-);
-
-
---
--- Name: inventory_sections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE inventory_sections (
-    id integer NOT NULL,
-    title character varying(255),
-    inventory_category_id integer,
-    permissions hstore,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    "position" integer,
-    required boolean NOT NULL,
-    location boolean DEFAULT false NOT NULL,
-    disabled boolean DEFAULT false
-);
-
-
---
--- Name: bi_inventory_fields; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_inventory_fields AS
- SELECT ivf.id,
-    isec.inventory_category_id,
-    (ivf.options -> 'label'::text) AS label
-   FROM (inventory_fields ivf
-     JOIN inventory_sections isec ON ((isec.id = ivf.inventory_section_id)))
-  WHERE ((ivf.kind)::text = ANY ((ARRAY['radio'::character varying, 'checkbox'::character varying, 'select'::character varying, 'date'::character varying, 'years'::character varying, 'months'::character varying, 'days'::character varying, 'hours'::character varying, 'seconds'::character varying, 'angle'::character varying, 'time'::character varying, 'integer'::character varying, 'decimal'::character varying, 'centimeters'::character varying, 'kilometers'::character varying])::text[]));
-
-
---
--- Name: inventory_field_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE inventory_field_options (
-    id integer NOT NULL,
-    inventory_field_id integer,
-    value character varying(255),
-    disabled boolean DEFAULT false,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: inventory_item_data; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE inventory_item_data (
-    id integer NOT NULL,
-    inventory_item_id integer,
-    inventory_field_id integer,
-    content text[],
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    inventory_field_option_ids integer[]
-);
-
-
---
--- Name: bi_inventory_fields_data; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_inventory_fields_data AS
- SELECT outer_iid.id,
-    outer_iid.inventory_item_id,
-    outer_iid.inventory_field_id,
-    unnest(content_array.label) AS label,
-    unnest(content_array.val) AS value
-   FROM inventory_item_data outer_iid,
-    LATERAL ( SELECT
-                CASE
-                    WHEN (iid.inventory_field_option_ids IS NOT NULL) THEN ( SELECT pg_catalog.array_agg(ifo.value) AS array_agg
-                       FROM (inventory_item_data inner_iid
-                         JOIN inventory_field_options ifo ON ((ifo.id = ANY (inner_iid.inventory_field_option_ids))))
-                      WHERE (outer_iid.id = inner_iid.id))
-                    WHEN (iid.content IS NOT NULL) THEN (iid.content)::character varying[]
-                    ELSE NULL::character varying[]
-                END AS label,
-                CASE
-                    WHEN (iid.inventory_field_option_ids IS NOT NULL) THEN ( SELECT pg_catalog.array_agg((ifo.id)::text) AS array_agg
-                       FROM (inventory_item_data inner_iid
-                         JOIN inventory_field_options ifo ON ((ifo.id = ANY (inner_iid.inventory_field_option_ids))))
-                      WHERE (outer_iid.id = inner_iid.id))
-                    WHEN (iid.content IS NOT NULL) THEN iid.content
-                    ELSE NULL::text[]
-                END AS val
-           FROM inventory_item_data iid
-          WHERE (((iid.inventory_field_option_ids IS NOT NULL) OR (iid.content IS NOT NULL)) AND (outer_iid.id = iid.id))) content_array;
-
-
---
--- Name: inventory_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE inventory_items (
-    id integer NOT NULL,
-    inventory_category_id integer,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    "position" geometry(Point),
-    title character varying(255),
-    address character varying(255),
-    inventory_status_id integer,
-    locked boolean DEFAULT false,
-    locked_at timestamp without time zone,
-    locker_id integer,
-    sequence integer,
-    namespace_id integer
-);
-
-
---
--- Name: bi_inventory_items; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_inventory_items AS
- SELECT ii.id,
-    ii.inventory_category_id,
-    ii.user_id,
-    ii.inventory_status_id,
-    ii.created_at,
-    ii.updated_at
-   FROM inventory_items ii;
-
-
---
--- Name: reports_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE reports_items (
-    id integer NOT NULL,
-    address text,
-    description text,
-    reports_status_id integer,
-    reports_category_id integer,
-    user_id integer,
-    inventory_item_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    "position" geometry(Point),
-    protocol bigint,
-    reference character varying(255),
-    confidential boolean DEFAULT false,
-    reporter_id integer,
-    overdue boolean DEFAULT false,
-    comments_count integer DEFAULT 0,
-    uuid uuid,
-    external_category_id integer,
-    is_solicitation boolean,
-    is_report boolean,
-    assigned_group_id integer,
-    assigned_user_id integer,
-    number character varying(255),
-    district character varying(255),
-    postal_code character varying(255),
-    city character varying(255),
-    state character varying(255),
-    country character varying(255),
-    offensive boolean DEFAULT false,
-    resolved_at timestamp without time zone,
-    overdue_at timestamp without time zone,
-    version integer DEFAULT 1,
-    last_version_at timestamp without time zone,
-    reports_perimeter_id integer,
-    from_webhook boolean DEFAULT false,
-    sync_at timestamp without time zone,
-    case_id integer,
-    namespace_id integer
-);
-
-
---
--- Name: reports_statuses_reports_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE reports_statuses_reports_categories (
-    reports_status_id integer,
-    reports_category_id integer,
-    id integer NOT NULL,
-    initial boolean DEFAULT false,
-    final boolean DEFAULT false,
-    private boolean DEFAULT false,
-    active boolean DEFAULT true,
-    color character varying(255),
-    create_case boolean,
-    flow_id integer,
-    responsible_group_id integer,
-    namespace_id integer
-);
-
-
---
--- Name: bi_reports_items; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW bi_reports_items AS
- SELECT ri.id,
-    ri.address,
-    ri.description,
-    ri.reports_status_id,
-    ri.reports_category_id,
-    ri.user_id,
-    ri.inventory_item_id,
-    ri.created_at,
-    ri.updated_at,
-    ri."position",
-    ri.protocol,
-    ri.reference,
-    ri.confidential,
-    ri.reporter_id,
-    ri.overdue,
-    ri.comments_count,
-    ri.uuid,
-    ri.external_category_id,
-    ri.is_solicitation,
-    ri.is_report,
-    ri.assigned_group_id,
-    ri.assigned_user_id,
-    ri.number,
-    ri.district,
-    ri.postal_code,
-    ri.city,
-    ri.state,
-    ri.country,
-    ri.offensive,
-    ri.resolved_at,
-    ri.overdue_at,
-    ri.version,
-    ri.last_version_at,
-    ri.reports_perimeter_id,
-    ri.from_webhook,
-    ri.sync_at,
-    ri.case_id,
-    ri.namespace_id,
-    round((((date_part('epoch'::text, avg_resolve_table.resolve_time) / (60)::double precision) / (60)::double precision))::numeric, 2) AS resolve_time_hours,
-    round(((((date_part('epoch'::text, avg_resolve_table.resolve_time) / (60)::double precision) / (60)::double precision) / (24)::double precision))::numeric, 2) AS resolve_time_days,
-    round((((date_part('epoch'::text, avg_resolve_table.overdue_time) / (60)::double precision) / (60)::double precision))::numeric, 2) AS overdue_time_hours,
-    round(((((date_part('epoch'::text, avg_resolve_table.overdue_time) / (60)::double precision) / (60)::double precision) / (24)::double precision))::numeric, 2) AS overdue_time_days
-   FROM (reports_items ri
-     LEFT JOIN ( SELECT reports_items.id AS report_id,
-            (reports_items.resolved_at - reports_items.created_at) AS resolve_time,
-            (COALESCE((reports_items.resolved_at)::timestamp with time zone, now()) - (reports_items.overdue_at)::timestamp with time zone) AS overdue_time
-           FROM reports_items
-          WHERE (reports_items.reports_status_id IN ( SELECT rs.reports_status_id
-                   FROM reports_statuses_reports_categories rs
-                  WHERE (((rs.reports_category_id = rs.reports_category_id) AND (rs.final IS TRUE)) OR ((reports_items.overdue_at IS NOT NULL) AND (reports_items.resolved_at IS NULL)))))) avg_resolve_table ON ((ri.id = avg_resolve_table.report_id)));
-
-
---
 -- Name: business_reports; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -683,6 +225,18 @@ ALTER SEQUENCE case_step_data_attachments_id_seq OWNED BY case_step_data_attachm
 
 
 --
+-- Name: case_step_data_fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE case_step_data_fields (
+    id integer NOT NULL,
+    case_step_id integer NOT NULL,
+    field_id integer NOT NULL,
+    value text
+);
+
+
+--
 -- Name: case_step_data_fields_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -735,6 +289,25 @@ ALTER SEQUENCE case_step_data_images_id_seq OWNED BY case_step_data_images.id;
 
 
 --
+-- Name: case_steps; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE case_steps (
+    id integer NOT NULL,
+    case_id integer,
+    step_id integer,
+    step_version integer DEFAULT 1,
+    created_by_id integer,
+    updated_by_id integer,
+    trigger_ids integer[] DEFAULT '{}'::integer[],
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    responsible_user_id integer,
+    responsible_group_id integer
+);
+
+
+--
 -- Name: case_steps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -751,6 +324,30 @@ CREATE SEQUENCE case_steps_id_seq
 --
 
 ALTER SEQUENCE case_steps_id_seq OWNED BY case_steps.id;
+
+
+--
+-- Name: cases; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE cases (
+    id integer NOT NULL,
+    created_by_id integer NOT NULL,
+    updated_by_id integer,
+    responsible_user integer,
+    responsible_group integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    initial_flow_id integer NOT NULL,
+    flow_version integer DEFAULT 1,
+    status character varying(255) DEFAULT 'active'::character varying,
+    disabled_steps integer[] DEFAULT '{}'::integer[],
+    resolution_state_id integer,
+    original_case_id integer,
+    old_status character varying(255),
+    source_reports_category_id integer,
+    namespace_id integer
+);
 
 
 --
@@ -882,6 +479,79 @@ ALTER SEQUENCE chat_rooms_id_seq OWNED BY chat_rooms.id;
 
 
 --
+-- Name: event_logs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE event_logs (
+    id integer NOT NULL,
+    user_id integer,
+    namespace_id integer,
+    url character varying(255),
+    request_method character varying(255),
+    headers json DEFAULT '{}'::json NOT NULL,
+    request_body json DEFAULT '{}'::json NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: event_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE event_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE event_logs_id_seq OWNED BY event_logs.id;
+
+
+--
+-- Name: exports; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE exports (
+    id integer NOT NULL,
+    inventory_category_id integer,
+    user_id integer,
+    kind integer DEFAULT 0 NOT NULL,
+    status integer DEFAULT 0 NOT NULL,
+    file character varying(255),
+    filters hstore DEFAULT ''::hstore NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    namespace_id integer
+);
+
+
+--
+-- Name: exports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE exports_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: exports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE exports_id_seq OWNED BY exports.id;
+
+
+--
 -- Name: feature_flags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -911,6 +581,32 @@ CREATE SEQUENCE feature_flags_id_seq
 --
 
 ALTER SEQUENCE feature_flags_id_seq OWNED BY feature_flags.id;
+
+
+--
+-- Name: fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE fields (
+    id integer NOT NULL,
+    title character varying(255),
+    field_type character varying(255),
+    category_inventory_id integer[] DEFAULT '{}'::integer[],
+    category_report_id integer[] DEFAULT '{}'::integer[],
+    origin_field_id integer,
+    active boolean DEFAULT true,
+    step_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    multiple boolean DEFAULT false,
+    filter character varying(255),
+    requirements hstore,
+    user_id integer,
+    origin_field_version integer,
+    draft boolean DEFAULT true,
+    "values" character varying(255)[] DEFAULT '{}'::character varying[],
+    field_id integer
+);
 
 
 --
@@ -1042,17 +738,22 @@ CREATE TABLE group_permissions (
     users_edit integer[] DEFAULT '{}'::integer[],
     business_reports_edit boolean,
     business_reports_view integer[] DEFAULT '{}'::integer[],
-    reports_items_send_notification integer[] DEFAULT '{}'::integer[],
-    reports_items_restart_notification integer[] DEFAULT '{}'::integer[],
     manage_chat_rooms boolean,
     chat_rooms_read integer[] DEFAULT '{}'::integer[],
+    reports_items_send_notification integer[] DEFAULT '{}'::integer[],
+    reports_items_restart_notification integer[] DEFAULT '{}'::integer[],
+    reports_items_export boolean DEFAULT false,
+    inventories_items_export boolean DEFAULT false,
     cases_with_reports_view integer[] DEFAULT '{}'::integer[],
     manage_cases boolean DEFAULT false,
-    users_read_private boolean DEFAULT false,
+    reports_items_group boolean DEFAULT false,
+    user_id integer,
+    manage_services boolean DEFAULT false NOT NULL,
     manage_namespaces boolean DEFAULT false NOT NULL,
     namespaces_access integer[] DEFAULT '{}'::integer[],
-    user_id integer,
-    manage_services boolean DEFAULT false NOT NULL
+    users_read_private boolean DEFAULT false,
+    event_logs_view boolean DEFAULT false NOT NULL,
+    inventories_items_group boolean DEFAULT false
 );
 
 
@@ -1234,7 +935,8 @@ CREATE TABLE inventory_categories (
     locked boolean DEFAULT false,
     locked_at timestamp without time zone,
     locker_id integer,
-    namespace_id integer
+    namespace_id integer,
+    deleted_at timestamp without time zone
 );
 
 
@@ -1268,6 +970,20 @@ CREATE TABLE inventory_categories_reports_categories (
 
 
 --
+-- Name: inventory_field_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_field_options (
+    id integer NOT NULL,
+    inventory_field_id integer,
+    value character varying(255),
+    disabled boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
 -- Name: inventory_field_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1284,6 +1000,30 @@ CREATE SEQUENCE inventory_field_options_id_seq
 --
 
 ALTER SEQUENCE inventory_field_options_id_seq OWNED BY inventory_field_options.id;
+
+
+--
+-- Name: inventory_fields; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_fields (
+    id integer NOT NULL,
+    title character varying(255),
+    kind character varying(255),
+    size character varying(255),
+    "position" integer,
+    inventory_section_id integer,
+    options hstore,
+    permissions hstore,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    required boolean DEFAULT false NOT NULL,
+    maximum integer,
+    minimum integer,
+    available_values character varying(255)[],
+    disabled boolean DEFAULT false,
+    use_as_title boolean DEFAULT false
+);
 
 
 --
@@ -1444,6 +1184,21 @@ ALTER SEQUENCE inventory_formulas_id_seq OWNED BY inventory_formulas.id;
 
 
 --
+-- Name: inventory_item_data; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_item_data (
+    id integer NOT NULL,
+    inventory_item_id integer,
+    inventory_field_id integer,
+    content text[],
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    inventory_field_option_ids integer[]
+);
+
+
+--
 -- Name: inventory_item_data_attachments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1597,6 +1352,28 @@ ALTER SEQUENCE inventory_item_histories_id_seq OWNED BY inventory_item_histories
 
 
 --
+-- Name: inventory_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_items (
+    id integer NOT NULL,
+    inventory_category_id integer,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    "position" geometry(Point),
+    title character varying(255),
+    address character varying(255),
+    inventory_status_id integer,
+    locked boolean DEFAULT false,
+    locked_at timestamp without time zone,
+    locker_id integer,
+    sequence integer,
+    namespace_id integer
+);
+
+
+--
 -- Name: inventory_item_sequence_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1632,6 +1409,54 @@ CREATE SEQUENCE inventory_items_id_seq
 --
 
 ALTER SEQUENCE inventory_items_id_seq OWNED BY inventory_items.id;
+
+
+--
+-- Name: inventory_items_relationships; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_items_relationships (
+    id integer NOT NULL,
+    inventory_item_id integer,
+    relationship_id integer
+);
+
+
+--
+-- Name: inventory_items_relationships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE inventory_items_relationships_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: inventory_items_relationships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE inventory_items_relationships_id_seq OWNED BY inventory_items_relationships.id;
+
+
+--
+-- Name: inventory_sections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE inventory_sections (
+    id integer NOT NULL,
+    title character varying(255),
+    inventory_category_id integer,
+    permissions hstore,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    "position" integer,
+    required boolean NOT NULL,
+    location boolean DEFAULT false NOT NULL,
+    disabled boolean DEFAULT false
+);
 
 
 --
@@ -1755,6 +1580,54 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
+-- Name: reports_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE reports_items (
+    id integer NOT NULL,
+    address text,
+    description text,
+    reports_status_id integer,
+    reports_category_id integer,
+    user_id integer,
+    inventory_item_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    "position" geometry(Point),
+    protocol bigint,
+    reference character varying(255),
+    confidential boolean DEFAULT false,
+    reporter_id integer,
+    overdue boolean DEFAULT false,
+    comments_count integer DEFAULT 0,
+    uuid uuid,
+    external_category_id integer,
+    is_solicitation boolean,
+    is_report boolean,
+    assigned_group_id integer,
+    assigned_user_id integer,
+    number character varying(255),
+    district character varying(255),
+    postal_code character varying(255),
+    city character varying(255),
+    state character varying(255),
+    country character varying(255),
+    offensive boolean DEFAULT false,
+    resolved_at timestamp without time zone,
+    overdue_at timestamp without time zone,
+    version integer DEFAULT 1,
+    last_version_at timestamp without time zone,
+    reports_perimeter_id integer,
+    from_webhook boolean DEFAULT false,
+    sync_at timestamp without time zone,
+    case_id integer,
+    group_key character varying(255),
+    namespace_id integer,
+    origin integer DEFAULT 0 NOT NULL
+);
+
+
+--
 -- Name: protocol_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1802,7 +1675,8 @@ CREATE TABLE reports_categories (
     priority integer,
     perimeters boolean DEFAULT false NOT NULL,
     flow_id integer,
-    namespace_id integer
+    namespace_id integer,
+    deleted_at timestamp without time zone
 );
 
 
@@ -1836,9 +1710,9 @@ CREATE TABLE reports_categories_perimeters (
     solver_group_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    namespace_id integer,
     active boolean DEFAULT true NOT NULL,
-    priority integer DEFAULT 0 NOT NULL
+    priority integer DEFAULT 0 NOT NULL,
+    namespace_id integer
 );
 
 
@@ -1979,7 +1853,7 @@ ALTER SEQUENCE reports_comments_id_seq OWNED BY reports_comments.id;
 
 CREATE TABLE reports_custom_field (
     id integer NOT NULL,
-    title text NOT NULL,
+    title character varying(255) NOT NULL,
     multiline boolean NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
@@ -2001,6 +1875,25 @@ CREATE TABLE reports_custom_field_data (
 
 
 --
+-- Name: reports_custom_field_data_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE reports_custom_field_data_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reports_custom_field_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE reports_custom_field_data_id_seq OWNED BY reports_custom_field_data.id;
+
+
+--
 -- Name: reports_custom_field_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2017,25 +1910,6 @@ CREATE SEQUENCE reports_custom_field_id_seq
 --
 
 ALTER SEQUENCE reports_custom_field_id_seq OWNED BY reports_custom_field.id;
-
-
---
--- Name: reports_custom_fields_data_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE reports_custom_fields_data_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: reports_custom_fields_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE reports_custom_fields_data_id_seq OWNED BY reports_custom_field_data.id;
 
 
 --
@@ -2115,7 +1989,9 @@ CREATE TABLE reports_images (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     title character varying(255),
-    date timestamp without time zone
+    date timestamp without time zone,
+    origin integer DEFAULT 0 NOT NULL,
+    visibility integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2349,9 +2225,9 @@ CREATE TABLE reports_perimeters (
     updated_at timestamp without time zone,
     geometry geometry(MultiPolygon,4326),
     solver_group_id integer,
-    namespace_id integer,
     active boolean DEFAULT true NOT NULL,
-    priority integer DEFAULT 0 NOT NULL
+    priority integer DEFAULT 0 NOT NULL,
+    namespace_id integer
 );
 
 
@@ -2372,6 +2248,38 @@ CREATE SEQUENCE reports_perimeters_id_seq
 --
 
 ALTER SEQUENCE reports_perimeters_id_seq OWNED BY reports_perimeters.id;
+
+
+--
+-- Name: reports_phraseologies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE reports_phraseologies (
+    id integer NOT NULL,
+    reports_category_id integer,
+    title character varying(255),
+    description text,
+    namespace_id integer
+);
+
+
+--
+-- Name: reports_phraseologies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE reports_phraseologies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reports_phraseologies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE reports_phraseologies_id_seq OWNED BY reports_phraseologies.id;
 
 
 --
@@ -2412,6 +2320,26 @@ ALTER SEQUENCE reports_statuses_id_seq OWNED BY reports_statuses.id;
 
 
 --
+-- Name: reports_statuses_reports_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE reports_statuses_reports_categories (
+    reports_status_id integer,
+    reports_category_id integer,
+    id integer NOT NULL,
+    initial boolean DEFAULT false,
+    final boolean DEFAULT false,
+    private boolean DEFAULT false,
+    active boolean DEFAULT true,
+    color character varying(255),
+    create_case boolean,
+    flow_id integer,
+    responsible_group_id integer,
+    namespace_id integer
+);
+
+
+--
 -- Name: reports_statuses_reports_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2428,6 +2356,40 @@ CREATE SEQUENCE reports_statuses_reports_categories_id_seq
 --
 
 ALTER SEQUENCE reports_statuses_reports_categories_id_seq OWNED BY reports_statuses_reports_categories.id;
+
+
+--
+-- Name: reports_suggestions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE reports_suggestions (
+    id integer NOT NULL,
+    reports_category_id integer,
+    reports_item_id integer,
+    reports_items_ids integer[] DEFAULT '{}'::integer[],
+    status integer DEFAULT 0,
+    address character varying(255),
+    namespace_id integer
+);
+
+
+--
+-- Name: reports_suggestions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE reports_suggestions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reports_suggestions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE reports_suggestions_id_seq OWNED BY reports_suggestions.id;
 
 
 --
@@ -2506,6 +2468,29 @@ CREATE SEQUENCE settings_id_seq
 --
 
 ALTER SEQUENCE settings_id_seq OWNED BY settings.id;
+
+
+--
+-- Name: steps; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE steps (
+    id integer NOT NULL,
+    title character varying(255),
+    description text,
+    step_type character varying(255),
+    flow_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    active boolean DEFAULT true,
+    child_flow_id integer,
+    child_flow_version integer,
+    conduction_mode_open boolean DEFAULT true,
+    draft boolean DEFAULT true,
+    user_id integer,
+    fields_versions json DEFAULT '{}'::json,
+    triggers_versions json DEFAULT '{}'::json
+);
 
 
 --
@@ -2638,11 +2623,11 @@ CREATE TABLE users (
     "position" character varying(255),
     commercial_phone character varying(255),
     birthdate date,
-    namespace_id integer,
     tsv_name tsvector,
     tsv_document tsvector,
     tsv_query tsvector,
-    kind integer DEFAULT 0 NOT NULL
+    kind integer DEFAULT 0 NOT NULL,
+    namespace_id integer
 );
 
 
@@ -2767,6 +2752,20 @@ ALTER TABLE ONLY chat_messages ALTER COLUMN id SET DEFAULT nextval('chat_message
 --
 
 ALTER TABLE ONLY chat_rooms ALTER COLUMN id SET DEFAULT nextval('chat_rooms_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_logs ALTER COLUMN id SET DEFAULT nextval('event_logs_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY exports ALTER COLUMN id SET DEFAULT nextval('exports_id_seq'::regclass);
 
 
 --
@@ -2927,6 +2926,13 @@ ALTER TABLE ONLY inventory_items ALTER COLUMN sequence SET DEFAULT nextval('inve
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY inventory_items_relationships ALTER COLUMN id SET DEFAULT nextval('inventory_items_relationships_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY inventory_sections ALTER COLUMN id SET DEFAULT nextval('inventory_sections_id_seq'::regclass);
 
 
@@ -2997,7 +3003,7 @@ ALTER TABLE ONLY reports_custom_field ALTER COLUMN id SET DEFAULT nextval('repor
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY reports_custom_field_data ALTER COLUMN id SET DEFAULT nextval('reports_custom_fields_data_id_seq'::regclass);
+ALTER TABLE ONLY reports_custom_field_data ALTER COLUMN id SET DEFAULT nextval('reports_custom_field_data_id_seq'::regclass);
 
 
 --
@@ -3081,6 +3087,13 @@ ALTER TABLE ONLY reports_perimeters ALTER COLUMN id SET DEFAULT nextval('reports
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY reports_phraseologies ALTER COLUMN id SET DEFAULT nextval('reports_phraseologies_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY reports_statuses ALTER COLUMN id SET DEFAULT nextval('reports_statuses_id_seq'::regclass);
 
 
@@ -3089,6 +3102,13 @@ ALTER TABLE ONLY reports_statuses ALTER COLUMN id SET DEFAULT nextval('reports_s
 --
 
 ALTER TABLE ONLY reports_statuses_reports_categories ALTER COLUMN id SET DEFAULT nextval('reports_statuses_reports_categories_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY reports_suggestions ALTER COLUMN id SET DEFAULT nextval('reports_suggestions_id_seq'::regclass);
 
 
 --
@@ -3218,6 +3238,22 @@ ALTER TABLE ONLY chat_messages
 
 ALTER TABLE ONLY chat_rooms
     ADD CONSTRAINT chat_rooms_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY event_logs
+    ADD CONSTRAINT event_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exports_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY exports
+    ADD CONSTRAINT exports_pkey PRIMARY KEY (id);
 
 
 --
@@ -3389,6 +3425,14 @@ ALTER TABLE ONLY inventory_items
 
 
 --
+-- Name: inventory_items_relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY inventory_items_relationships
+    ADD CONSTRAINT inventory_items_relationships_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: inventory_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3461,19 +3505,19 @@ ALTER TABLE ONLY reports_comments
 
 
 --
+-- Name: reports_custom_field_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY reports_custom_field_data
+    ADD CONSTRAINT reports_custom_field_data_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: reports_custom_field_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY reports_custom_field
     ADD CONSTRAINT reports_custom_field_pkey PRIMARY KEY (id);
-
-
---
--- Name: reports_custom_fields_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY reports_custom_field_data
-    ADD CONSTRAINT reports_custom_fields_data_pkey PRIMARY KEY (id);
 
 
 --
@@ -3557,6 +3601,14 @@ ALTER TABLE ONLY reports_perimeters
 
 
 --
+-- Name: reports_phraseologies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY reports_phraseologies
+    ADD CONSTRAINT reports_phraseologies_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: reports_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3570,6 +3622,14 @@ ALTER TABLE ONLY reports_statuses
 
 ALTER TABLE ONLY reports_statuses_reports_categories
     ADD CONSTRAINT reports_statuses_reports_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reports_suggestions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY reports_suggestions
+    ADD CONSTRAINT reports_suggestions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3787,6 +3847,27 @@ CREATE INDEX index_cases_on_status ON cases USING btree (status);
 --
 
 CREATE INDEX index_chat_rooms_on_namespace_id ON chat_rooms USING btree (namespace_id);
+
+
+--
+-- Name: index_exports_on_inventory_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_exports_on_inventory_category_id ON exports USING btree (inventory_category_id);
+
+
+--
+-- Name: index_exports_on_namespace_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_exports_on_namespace_id ON exports USING btree (namespace_id);
+
+
+--
+-- Name: index_exports_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_exports_on_user_id ON exports USING btree (user_id);
 
 
 --
@@ -4084,6 +4165,13 @@ CREATE INDEX index_inventory_items_on_user_id ON inventory_items USING btree (us
 
 
 --
+-- Name: index_inventory_items_relationships; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_inventory_items_relationships ON inventory_items_relationships USING btree (inventory_item_id, relationship_id);
+
+
+--
 -- Name: index_inventory_sections_on_inventory_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4151,6 +4239,20 @@ CREATE INDEX index_reports_category_settings_on_namespace_id ON reports_category
 --
 
 CREATE INDEX index_reports_category_settings_on_reports_category_id ON reports_category_settings USING btree (reports_category_id);
+
+
+--
+-- Name: index_reports_custom_field_data_on_reports_custom_field_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_custom_field_data_on_reports_custom_field_id ON reports_custom_field_data USING btree (reports_custom_field_id);
+
+
+--
+-- Name: index_reports_custom_field_data_on_reports_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_custom_field_data_on_reports_item_id ON reports_custom_field_data USING btree (reports_item_id);
 
 
 --
@@ -4294,6 +4396,13 @@ CREATE INDEX index_reports_perimeters_on_namespace_id ON reports_perimeters USIN
 
 
 --
+-- Name: index_reports_phraseologies_on_namespace_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_phraseologies_on_namespace_id ON reports_phraseologies USING btree (namespace_id);
+
+
+--
 -- Name: index_reports_statuses_item_and_status_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4319,6 +4428,41 @@ CREATE INDEX index_reports_statuses_on_reports_category_id ON reports_statuses U
 --
 
 CREATE INDEX index_reports_statuses_reports_categories_on_namespace_id ON reports_statuses_reports_categories USING btree (namespace_id);
+
+
+--
+-- Name: index_reports_suggestions_on_namespace_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_suggestions_on_namespace_id ON reports_suggestions USING btree (namespace_id);
+
+
+--
+-- Name: index_reports_suggestions_on_reports_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_suggestions_on_reports_category_id ON reports_suggestions USING btree (reports_category_id);
+
+
+--
+-- Name: index_reports_suggestions_on_reports_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_suggestions_on_reports_item_id ON reports_suggestions USING btree (reports_item_id);
+
+
+--
+-- Name: index_reports_suggestions_on_reports_items_ids; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_suggestions_on_reports_items_ids ON reports_suggestions USING gin (reports_items_ids);
+
+
+--
+-- Name: index_reports_suggestions_on_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_reports_suggestions_on_status ON reports_suggestions USING btree (status);
 
 
 --
@@ -4939,35 +5083,47 @@ INSERT INTO schema_migrations (version) VALUES ('20160120223835');
 
 INSERT INTO schema_migrations (version) VALUES ('20160121013718');
 
-INSERT INTO schema_migrations (version) VALUES ('20160122024319');
-
 INSERT INTO schema_migrations (version) VALUES ('20160122024320');
 
 INSERT INTO schema_migrations (version) VALUES ('20160126192938');
 
 INSERT INTO schema_migrations (version) VALUES ('20160215215950');
 
+INSERT INTO schema_migrations (version) VALUES ('20160216132107');
+
+INSERT INTO schema_migrations (version) VALUES ('20160217175327');
+
 INSERT INTO schema_migrations (version) VALUES ('20160223143515');
 
 INSERT INTO schema_migrations (version) VALUES ('20160224162244');
 
+INSERT INTO schema_migrations (version) VALUES ('20160225152427');
+
 INSERT INTO schema_migrations (version) VALUES ('20160225181855');
+
+INSERT INTO schema_migrations (version) VALUES ('20160226082006');
 
 INSERT INTO schema_migrations (version) VALUES ('20160304210015');
 
 INSERT INTO schema_migrations (version) VALUES ('20160308031440');
 
+INSERT INTO schema_migrations (version) VALUES ('20160311084135');
+
 INSERT INTO schema_migrations (version) VALUES ('20160321112056');
 
 INSERT INTO schema_migrations (version) VALUES ('20160328140406');
 
-INSERT INTO schema_migrations (version) VALUES ('20160328154811');
-
 INSERT INTO schema_migrations (version) VALUES ('20160330141439');
+
+INSERT INTO schema_migrations (version) VALUES ('20160331093416');
 
 INSERT INTO schema_migrations (version) VALUES ('20160331230826');
 
 INSERT INTO schema_migrations (version) VALUES ('20160401013331');
+
+INSERT INTO schema_migrations (version) VALUES ('20160404111342');
+
+INSERT INTO schema_migrations (version) VALUES ('20160407111810');
 
 INSERT INTO schema_migrations (version) VALUES ('20160412102320');
 
@@ -5032,4 +5188,24 @@ INSERT INTO schema_migrations (version) VALUES ('20160829102132');
 INSERT INTO schema_migrations (version) VALUES ('20160831172303');
 
 INSERT INTO schema_migrations (version) VALUES ('20160903172943');
+
+INSERT INTO schema_migrations (version) VALUES ('20160912164811');
+
+INSERT INTO schema_migrations (version) VALUES ('20160912172043');
+
+INSERT INTO schema_migrations (version) VALUES ('20160930105422');
+
+INSERT INTO schema_migrations (version) VALUES ('20161005141349');
+
+INSERT INTO schema_migrations (version) VALUES ('20161005143910');
+
+INSERT INTO schema_migrations (version) VALUES ('20161018133344');
+
+INSERT INTO schema_migrations (version) VALUES ('20161018163634');
+
+INSERT INTO schema_migrations (version) VALUES ('20161117205822');
+
+INSERT INTO schema_migrations (version) VALUES ('20161118103219');
+
+INSERT INTO schema_migrations (version) VALUES ('20161122163006');
 

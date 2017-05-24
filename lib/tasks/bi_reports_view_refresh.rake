@@ -6,6 +6,24 @@ task refresh_bi_views: :environment do
 
   CREATE VIEW bi_reports_items AS
   SELECT ri.*,
+    CASE
+      WHEN ri.origin = 2 THEN 'ZUP Cidadão - IOS'
+      WHEN ri.origin = 1 THEN 'ZUP Cidadão - Android'
+      WHEN ri.origin = 3 THEN 'ZUP Técnico'
+      WHEN ri.origin = 4 THEN 'WEB Cidadão'
+      ELSE
+        COALESCE(
+          (
+            SELECT groups.name
+            FROM groups
+            INNER JOIN groups_users gu ON gu.group_id = groups.id
+            INNER JOIN users ON users.id = gu.user_id
+            WHERE groups.guest = FALSE
+            AND users.id = ri.reporter_id
+            LIMIT 1
+          ), 'Painel'
+        )
+      END	AS solicitation,
     round(CAST((EXTRACT(EPOCH FROM avg_resolve_table.resolve_time) / 60 / 60) as numeric), 2) resolve_time_hours,
     round(CAST((EXTRACT(EPOCH FROM avg_resolve_table.resolve_time) / 60 / 60 / 24) as numeric), 2) resolve_time_days,
     round(CAST((EXTRACT(EPOCH FROM avg_resolve_table.overdue_time) / 60 / 60) as numeric), 2) overdue_time_hours,

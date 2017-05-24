@@ -1,4 +1,4 @@
-class MarkerUploader < CarrierWave::Uploader::Base
+class MarkerUploader < BaseUploader
   include CarrierWave::MiniMagick
 
   version :retina do

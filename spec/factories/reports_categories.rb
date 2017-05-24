@@ -46,5 +46,9 @@ FactoryGirl.define do
     trait :confidential do
       confidential true
     end
+
+    trait :deleted do
+      deleted_at 45.days.ago
+    end
   end
 end

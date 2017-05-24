@@ -121,4 +121,32 @@ describe Inventory::Item do
       ).to eq(item.title)
     end
   end
+
+  describe '#generate_title' do
+    let(:category) { create(:inventory_category) }
+
+    let!(:exists_field) do
+      create(
+        :inventory_field,
+        section: category.sections.sample,
+        options: { label: 'Title' }
+      )
+    end
+
+    let!(:field) do
+      build(
+        :inventory_field,
+        section: category.sections.sample,
+        options: { label: 'Title' }
+      )
+    end
+
+    it 'generate the title with number' do
+      exists_field.send(:generate_title)
+      exists_field.save
+
+      expect(field.send(:generate_title)).to be_truthy
+      expect(field.title).to eq 'field_title_1'
+    end
+  end
 end

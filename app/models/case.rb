@@ -66,9 +66,10 @@ class Case < ActiveRecord::Base
   end
 
   def steps_not_fulfilled
-    my_initial_flow.list_all_steps(my_initial_flow, disabled_steps).reject do |step|
-      step.my_case_steps(case_id: id).first.try(:executed?)
-    end.map(&:id)
+    executed_case_steps_ids = case_steps.joins(:case_step_data_fields).pluck(:step_id)
+    flow_steps_ids = my_initial_flow.my_steps.map(&:id)
+
+    (flow_steps_ids - executed_case_steps_ids)
   end
 
   def my_initial_flow

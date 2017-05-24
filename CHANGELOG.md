@@ -1,5 +1,30 @@
 # Histórico de mudanças
 
+## 1.3.4 - 06/12/2016
+- [Correção] Corrige tag de imagens dentro de layout de notificações
+- [Nova funcionalidade] Nova funcionalidade de relacionar itens de inventário
+- [Nova funcionalidade] Nova funcionalidade de registrar origem da solicitação
+
+## 1.3.3 - 25/11/2016
+- [Correção] Corrige integração com o Redis em caso de multi-instância
+- [Correção] Corrige problema com campos de inventário com mesmo nome em seções diferentes
+- [Correção] Corrige problema que não reiniciava o módulo de relatórios corretamente
+- [Nova funcionalidade] Adiciona estrutura para categorias de relato e inventário marcadas para deleção
+
+## 1.3.2 - 04/11/2016
+- [Nova funcionalidade] Auditoria da API
+
+## 1.3.1 - 02/11/2016
+- [Correção] Corrige categorias desconfiguradas após atualização para 1.3.0
+
+## 1.3.0 - 01/11/2016
+- Localidades
+- Novas funcionalidades de relatos
+
+## 1.2.3 - 05/10/2016
+- [Casos] Aumenta consideravelmente a performance de casos
+- [Localidades] Considera localidade Global se nenhuma localidade for informada na requisição
+
 ## 1.2.2 - 12/09/2016
 ### Correções
 - [Relatórios] Corrige o uso da data de criação como dimensão horizontal para Casos

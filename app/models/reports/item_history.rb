@@ -3,7 +3,8 @@ class Reports::ItemHistory < Reports::Base
 
   KINDS = %w(attributes address description status category forward
              user_assign overdue comment creation notification
-             notification_restart reference perimeter)
+             notification_restart reference perimeter grouped ungrouped
+             add_image remove_image update_image)
 
   belongs_to :item, class_name: 'Reports::Item', foreign_key: 'reports_item_id'
   belongs_to :user

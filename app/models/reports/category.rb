@@ -2,6 +2,7 @@ class Reports::Category < Reports::Base
   include EncodedImageUploadable
   include SolverGroup
   include NamespaceFilterable
+  include Deletable
 
   belongs_to :namespace
 
@@ -68,8 +69,9 @@ class Reports::Category < Reports::Base
 
   enum priority: [:low, :medium, :high]
 
-  scope :active, -> { where(active: true) }
-  scope :main, -> { where(parent_id: nil) }
+  scope :active,  -> { where(deleted_at: nil) }
+  scope :deleted, -> { where.not(deleted_at: nil) }
+  scope :main,    -> { where(parent_id: nil) }
 
   default_scope -> { order(title: :asc) }
 
@@ -173,6 +175,7 @@ class Reports::Category < Reports::Base
     expose :notifications
     expose :ordered_notifications
     expose :perimeters
+    expose :days_for_deletion
 
     expose :custom_fields, using: Reports::CustomField::Entity
 

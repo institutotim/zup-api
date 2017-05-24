@@ -290,11 +290,12 @@ class Reports::SearchItems
                     AND settings.namespace_id = reports_items.namespace_id
                   SQL
                 )
+                .where(reports_categories: { deleted_at: nil })
                 .preload(
                   :category, :assigned_user, :reporter,
                   :assigned_group, :user, notifications: [:notification_type],
                   inventory_item: [data: [:field]]
-                   ).reorder(order_translated)
+                ).reorder(order_translated)
 
       @scope = paginator.call(@scope) if paginator.present?
     elsif position_params.blank?
@@ -315,8 +316,8 @@ class Reports::SearchItems
   end
 
   def sort_fields
-    %(created_at id protocol updated_at address status user_name
-      reporter group category priority)
+    %(created_at id protocol updated_at address status user reporter assignment
+      category priority)
   end
 
   def sort_translated
@@ -324,9 +325,9 @@ class Reports::SearchItems
     when 'priority'     then 'settings.priority'
     when 'category'     then 'reports_categories.title'
     when 'status'       then 'reports_statuses.title'
-    when 'user_name'    then 'users.name'
+    when 'user'         then 'users.name'
     when 'reporter'     then 'reports.name'
-    when 'group'        then 'groups.name'
+    when 'assignment'   then 'groups.name'
     when 'address'      then 'reports_items.address'
     else "reports_items.#{sort}"
     end

@@ -13,7 +13,7 @@ host = 0.0.0.0
 port = 8085
 reload = yes
 prettyprint = yes
-json_record_limit = 8085
+json_record_limit = 30000
 allow_cors_origin = *
 
 [store]

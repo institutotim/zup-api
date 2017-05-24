@@ -16,6 +16,8 @@ class Reports::Comment < Reports::Base
   end
 
   scope :external, -> { where(visibility: [0, 1]) }
+  scope :internal, -> { where(visibility: 2) }
+  scope :with_visibility, -> (visibility) { where('visibility <= ?', visibility) }
 
   belongs_to :item, foreign_key: 'reports_item_id', class_name: 'Reports::Item',
              counter_cache: :comments_count
@@ -28,6 +30,18 @@ class Reports::Comment < Reports::Base
   before_validation :set_default_values
 
   scope :with_visibility, -> (visibility) { where('visibility <= ?', visibility) }
+
+  def public?
+    visibility == PUBLIC
+  end
+
+  def private?
+    visibility == PRIVATE
+  end
+
+  def internal?
+    visibility == INTERNAL
+  end
 
   private
 

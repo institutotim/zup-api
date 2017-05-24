@@ -38,8 +38,11 @@ describe Reports::Items::API do
 
       expect(body['images'][0]['high']).to_not be_empty
       expect(body['images'][0]['low']).to_not be_empty
+      expect(body['images'][0]['origin']).to_not be_nil
+
       expect(body['images'][1]['high']).to_not be_empty
       expect(body['images'][1]['low']).to_not be_empty
+      expect(body['images'][1]['origin']).to_not be_nil
     end
 
     it 'should create a new report without latitude and longitude' do
@@ -101,10 +104,14 @@ describe Reports::Items::API do
       expect(body['status']['final']).to_not be_nil
       expect(body['status']['initial']).to_not be_nil
       expect(body['category']).to_not be_nil
+
       expect(body['images'][0]['high']).to_not be_empty
       expect(body['images'][0]['low']).to_not be_empty
+      expect(body['images'][0]['origin']).to_not be_nil
+
       expect(body['images'][1]['high']).to_not be_empty
       expect(body['images'][1]['low']).to_not be_empty
+      expect(body['images'][1]['origin']).to_not be_nil
     end
 
     it 'accepts passing an user_id as argument' do
@@ -465,6 +472,17 @@ describe Reports::Items::API do
         expect(item.category).to eq(other_category)
         expect(item.status).to eq(other_status)
       end
+
+      it 'ungroup the report when change category' do
+        item.update(group_key: 'dbe88426703c499f6ebe6b799f5245ac')
+
+        expect_any_instance_of(Reports::GroupItems).to receive(:ungroup!).and_call_original
+
+        put "/reports/#{item.category.id}/items/#{item.id}/change_category", valid_params, auth(user)
+        item.reload
+
+        expect(item.group_key).to be_nil
+      end
     end
   end
 
@@ -506,6 +524,17 @@ describe Reports::Items::API do
           expect(item.assigned_group).to eq(group)
           expect(item.assigned_user).to be_nil
         end
+
+        it 'replicate to grouped reports' do
+          valid_params[:replicate] = true
+          valid_params[:comment] = 'New comment'
+
+          expect(CopyToReportsItems).to receive(:perform_async).with(user.id,
+            item.id, 'group', comment: 'New comment')
+
+          put "/reports/#{item.category.id}/items/#{item.id}/forward", valid_params, auth(user)
+          expect(response.status).to eq(200)
+        end
       end
 
       context 'user doest\'t have permission to forward' do
@@ -539,7 +568,7 @@ describe Reports::Items::API do
       user.save!
     end
 
-    context 'valid category and status' do
+    context 'valid user' do
       let(:valid_params) do
         Oj.load <<-JSON
           {
@@ -548,11 +577,20 @@ describe Reports::Items::API do
         JSON
       end
 
-      it 'updates the category and status of the item correctly' do
+      it 'updates the assigned user of the item correctly' do
         put "/reports/#{item.category.id}/items/#{item.id}/assign", valid_params, auth(user)
         item.reload
 
         expect(item.assigned_user).to eq(user)
+      end
+
+      it 'replicate to grouped reports' do
+        valid_params[:replicate] = true
+
+        expect(CopyToReportsItems).to receive(:perform_async).with(user.id, item.id, 'user')
+
+        put "/reports/#{item.category.id}/items/#{item.id}/assign", valid_params, auth(user)
+        expect(response.status).to eq(200)
       end
     end
   end
@@ -588,6 +626,16 @@ describe Reports::Items::API do
           item.reload
 
           expect(item.status).to eq(status)
+        end
+
+        it 'replicate to grouped reports' do
+          valid_params[:replicate] = true
+
+          expect(CopyToReportsItems).to receive(:perform_async).with(user.id, item.id, 'status',
+            comment: nil, visibility: nil)
+
+          put "/reports/#{item.category.id}/items/#{item.id}/update_status", valid_params, auth(user)
+          expect(response.status).to eq(200)
         end
 
         context 'category requires comment when updating the status' do

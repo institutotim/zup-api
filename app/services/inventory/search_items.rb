@@ -50,6 +50,12 @@ class Inventory::SearchItems
 
   def initialize_scope
     @scope = Inventory::Item.includes(:category, :user, :namespace)
+                            .joins(
+                              <<-SQL
+                                INNER JOIN inventory_categories ic ON ic.id = inventory_items.inventory_category_id
+                                AND ic.deleted_at IS NULL
+                              SQL
+                            )
   end
 
   def build_query_filter
@@ -196,7 +202,7 @@ class Inventory::SearchItems
   def build_sort_and_order_statement
     if sort && !clusterize && valid_sort_and_order_values?
       if sort == 'title'
-        @scope = @scope.reorder("title #{order}, sequence #{order}")
+        @scope = @scope.reorder("inventory_items.title #{order}, inventory_items.sequence #{order}")
       else
         @scope = @scope.reorder("#{sort_translated} #{order.downcase}")
       end

@@ -1,4 +1,4 @@
-class PinUploader < CarrierWave::Uploader::Base
+class PinUploader < BaseUploader
   include CarrierWave::MiniMagick
 
   version :retina do

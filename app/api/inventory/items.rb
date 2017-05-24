@@ -123,6 +123,8 @@ module Inventory::Items
             optional :data, type: Hash, desc: 'The item data where each element is a content for a category field'
             optional :inventory_status_id, type: Integer,
                      desc: 'The inventory status you want'
+            optional :inventory_ids, type: Array,
+                     desc: 'Array of related inventory items'
           end
           put ':id' do
             authenticate!
@@ -152,6 +154,10 @@ module Inventory::Items
               if safe_params[:data]
                 updater = Inventory::UpdateItemData.new(item, safe_params[:data], current_user, check_formulas)
                 item = updater.update!
+              end
+
+              if user_permissions.can?(:group, item)
+                item.inventory_ids = safe_params[:inventory_ids]
               end
 
               {

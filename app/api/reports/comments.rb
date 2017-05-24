@@ -11,8 +11,7 @@ module Reports::Comments
         comments = Reports::GetCommentsForUser.new(report, current_user).comments
 
         {
-          comments: \
-            Reports::Comment::Entity.represent(comments)
+          comments: Reports::Comment::Entity.represent(comments)
         }
       end
 
@@ -24,6 +23,8 @@ module Reports::Comments
                  desc: '0 = Public, 1 = Private, 2 = Internal'
         optional :message, type: String,
                  desc: 'The message itself'
+        optional :replicate, type: Boolean, default: false,
+                 desc: 'Replicate the change to grouped reports'
       end
       post do
         authenticate!
@@ -34,37 +35,25 @@ module Reports::Comments
         comment_params[:author_id] = current_user.id
         comment_params[:reports_item_id] = report.id
 
-        comment = Reports::Comment.new(comment_params)
+        service = Reports::CreateComment.new(current_user, report)
+        service.build(comment_params)
 
-        validate_permission!(:create_internal, comment) if Reports::Comment::INTERNAL == comment.visibility
-        validate_permission!(:create, comment) if Reports::Comment::PRIVATE == comment.visibility
+        if service.comment.internal?
+          validate_permission!(:create_internal, service.comment)
+        elsif service.comment.private?
+          validate_permission!(:create, service.comment)
+        end
 
-        comment.save!
+        service.save!
 
-        Reports::NotifyUser.new(report).notify_new_comment!(comment)
-
-        create_history = Reports::CreateHistoryEntry.new(report, current_user)
-        create_history.create('comment',
-                              "Inseriu um comentário #{translated_visibility(comment.visibility)}",
-                              new: comment.entity(only: [:id, :message, :visibility]))
-
-        if Reports::Comment::INTERNAL != comment.visibility && Webhook.enabled?
-          SendReportThroughWebhook.perform_async(report.uuid, 'update')
+        if params[:replicate]
+          CopyToReportsItems.perform_async(current_user.id, report.id, 'comment',
+            comment_id: service.comment.id)
         end
 
         {
-          comment: Reports::Comment::Entity.represent(comment)
+          comment: Reports::Comment::Entity.represent(service.comment)
         }
-      end
-    end
-
-    helpers do
-      def translated_visibility(visibility)
-        {
-          Reports::Comment::INTERNAL => 'interno',
-          Reports::Comment::PUBLIC   => 'público',
-          Reports::Comment::PRIVATE  => 'privado'
-        }[visibility]
       end
     end
   end

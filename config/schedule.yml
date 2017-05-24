@@ -9,3 +9,11 @@ set_reports_overdue:
 expire_access_keys:
   cron: "0 6 * * *"
   class: "ExpireAccessKeys"
+
+delete_marked_records:
+  cron: "0 4 * * *"
+  class: "DeleteMarkedRecords"
+
+create_suggestions_to_group_reports:
+  cron: "0 0,6,12,18 * * *"
+  class: "CreateSuggestionsToGroupReports"

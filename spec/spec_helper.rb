@@ -35,6 +35,7 @@ RSpec.configure do |config|
   config.include AuthenticationHelper
   config.include FactoryGirl::Syntax::Methods
   config.include IntegrationHelper
+  config.include ImageHelper
   config.include RackTestExampleGroup
   config.include FileEncodingHelper
 

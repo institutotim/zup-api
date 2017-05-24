@@ -74,10 +74,36 @@ class Inventory::Field < Inventory::Base
 
   # Group permissions
   def permissions
-    {
-      groups_can_view: groups_can_view,
-      groups_can_edit: groups_can_edit
-    }
+    self.class.permissions_for(self)
+  end
+
+  def self.permissions_for(field)
+    if ENV['DISABLE_MEMORY_CACHE'] == 'true'
+      permissions =  {
+        groups_can_view: field.groups_can_view,
+        groups_can_edit: field.groups_can_edit
+      }
+    else
+      cache_key = Group.cache_key
+
+      @cached_permissions ||= {
+        cache_key => {}
+      }
+
+      if @cached_permissions[cache_key] && @cached_permissions[cache_key][field.id]
+        permissions = @cached_permissions[cache_key][field.id]
+      else
+        permissions =  {
+          groups_can_view: field.groups_can_view,
+          groups_can_edit: field.groups_can_edit
+        }
+
+        @cached_permissions[cache_key] ||= {}
+        @cached_permissions[cache_key][field.id] = permissions
+      end
+    end
+
+    permissions
   end
 
   def groups_can_view
@@ -130,9 +156,8 @@ class Inventory::Field < Inventory::Base
   end
 
   def generate_title
-    generated_title = label.unaccented.downcase
-    generated_title = generated_title.gsub(/\W/, '_')
-    generated_title = "field_#{generated_title}"
+    field_title = label.unaccented.downcase.gsub(/\W/, '_')
+    generated_title = "field_#{field_title}"
 
     i = 0
     begin
@@ -142,8 +167,11 @@ class Inventory::Field < Inventory::Base
         self.title = "#{generated_title}"
       end
       i += 1
-    end while self.class.find_by(inventory_section_id: inventory_section_id, title: title)
-
+    end while self.class.joins(section: [:category])
+                        .find_by(
+                          inventory_categories: { id: section.inventory_category_id },
+                          title: title
+                        )
     true
   end
 end

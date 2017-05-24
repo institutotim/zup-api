@@ -18,7 +18,7 @@ describe Search::Reports::Items::API do
 
         let!(:valid_params) do
           {
-            sort: 'user_name',
+            sort: 'user',
             order: 'asc'
           }
         end
@@ -147,7 +147,7 @@ describe Search::Reports::Items::API do
 
         let!(:valid_params) do
           {
-            sort: 'group',
+            sort: 'assignment',
             order: 'asc'
           }
         end

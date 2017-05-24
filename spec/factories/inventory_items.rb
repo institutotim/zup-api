@@ -29,4 +29,11 @@ FactoryGirl.define do
       association :status, factory: :inventory_status
     end
   end
+
+  factory :inventory_item_without_data, class: 'Inventory::Item' do
+    association :category, factory: :inventory_category_with_sections
+    association :user, factory: :user
+
+    namespace { Namespace.first_or_create(default: true, name: 'Namespace') }
+  end
 end

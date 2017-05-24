@@ -1,16 +1,6 @@
 module EncodedFileUploadable
   extend ActiveSupport::Concern
-
-  # Get encoded file and add to a temp
-  # encoded files
-  def encoded_to_file(encoded_file, file_name = nil)
-    extension = file_name ? ".#{file_name.match(/[^\.]+$/)}" : ''
-    temp_file = Tempfile.new([SecureRandom.hex(3), extension])
-    temp_file.binmode
-    temp_file.write(Base64.decode64(encoded_file))
-    temp_file.close
-    temp_file
-  end
+  include FileEncodable
 
   module ClassMethods
     def accepts_encoded_file(*args)

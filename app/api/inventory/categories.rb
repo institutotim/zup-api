@@ -14,7 +14,7 @@ module Inventory::Categories
           title = safe_params[:title]
           permissions = UserAbility.for_user(current_user)
 
-          categories = Inventory::Category.includes(:namespace, :statuses,
+          categories = Inventory::Category.active.includes(:namespace, :statuses,
             :sections, sections: [{ fields: :field_options }])
 
           unless permissions.can?(:manage, Inventory::Category)
@@ -34,6 +34,21 @@ module Inventory::Categories
             )
           }.as_json
         end
+      end
+
+      desc 'List all deleted inventory categories'
+      get 'deleted' do
+        authenticate!
+        validate_permission!(:manage, Inventory::Category)
+
+        categories = Inventory::Category.deleted
+
+        {
+          categories: Inventory::Category::Entity.represent(
+            categories,
+            only: return_fields
+          )
+        }
       end
 
       desc 'Create an category'
@@ -123,11 +138,24 @@ module Inventory::Categories
 
         category = Inventory::Category.find(safe_params[:id])
         validate_permission!(:delete, category)
-        category.destroy
+        category.delete
 
         Garner.config.cache.delete_matched('inventory/category*')
 
         { message: 'Category deleted successfully' }
+      end
+
+      desc 'Restore category'
+      put ':id/restore' do
+        authenticate!
+        validate_permission!(:manage, Inventory::Category)
+
+        category = Inventory::Category.find(safe_params[:id])
+        category.restore
+
+        Garner.config.cache.delete_matched('inventory/category*')
+
+        { message: 'Category restored successfully' }
       end
 
       desc "Update category's info"
@@ -142,7 +170,6 @@ module Inventory::Categories
           desc: 'Defines if item of category should have a status'
         optional :groups_can_view, type: Array, desc: 'An array of groups ids'
         optional :groups_can_edit, type: Array, desc: 'An array of groups ids'
-        optional :namespace_id, type: Integer, desc: 'Namespace ID'
       end
       put ':id' do
         authenticate!
@@ -154,8 +181,6 @@ module Inventory::Categories
           :title, :description, :color, :plot_format, :require_item_status,
           :private
         )
-
-        category_params[:namespace_id] = app_namespace_id
 
         category_params = category_params.merge(
           icon: params[:icon],

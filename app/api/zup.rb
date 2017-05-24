@@ -11,8 +11,9 @@ module ZUP
   class API < Grape::API
     use Rack::ConditionalGet
     use Rack::ETag
+    use Audit
 
-    unless Application.config.env.test?
+    if ENV['LOG_REQUESTS']
       use GrapeLogging::Middleware::RequestLogger, logger: logger, include: [GrapeLogging::Loggers::Response.new,
                                                                            GrapeLogging::Loggers::FilterParameters.new([:password]),
                                                                            GrapeLogging::Loggers::ClientEnv.new,
@@ -49,6 +50,8 @@ module ZUP
     mount Notifications::API
     mount Terminology::API
     mount Namespaces::API
+    mount Exports::API
+    mount EventLogs::API
 
     add_swagger_documentation(hide_format: true)
 

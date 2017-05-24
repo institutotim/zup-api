@@ -9,34 +9,59 @@ class Reports::Item < Reports::Base
       against: [:address, :protocol, :district, :postal_code],
       associated_against: { user: :name }
 
-    o.pg_search_scope :search_by_address, against: [:address, :district, :postal_code]
-  end
+    o.pg_search_scope :search_by_address,
+      against: [:address, :district, :postal_code]
 
-  pg_search_scope :search_by_user_document, associated_against: { user: :document },
-    using: { tsearch: { prefix: true }, trigram: {} },
-    ignoring: :accents
+    o.pg_search_scope :search_by_user_document,
+      associated_against: { user: :document },
+      using: { trigram: { threshold: 0.3 } }
+  end
 
   accepts_multiple_images_for :images
 
   set_rgeo_factory_for_column(:position, RGeo::Geographic.simple_mercator_factory)
 
-  belongs_to :status, foreign_key: 'reports_status_id', class_name: 'Reports::Status'
-  belongs_to :category, foreign_key: 'reports_category_id', class_name: 'Reports::Category'
-  belongs_to :user
-  belongs_to :inventory_item, class_name: 'Inventory::Item'
-  belongs_to :reporter, class_name: 'User'
   belongs_to :assigned_group, class_name: 'Group'
   belongs_to :assigned_user, class_name: 'User'
   belongs_to :case
   belongs_to :namespace
 
-  belongs_to :perimeter,
-    foreign_key: 'reports_perimeter_id',
-    class_name: 'Reports::Perimeter'
+  belongs_to :category,
+    class_name: 'Reports::Category',
+    foreign_key: 'reports_category_id'
 
-  has_one :feedback, class_name: 'Reports::Feedback',
-                     foreign_key: :reports_item_id,
-                     dependent: :destroy
+  belongs_to :inventory_item, class_name: 'Inventory::Item'
+  belongs_to :reporter, class_name: 'User'
+
+  belongs_to :perimeter,
+    class_name: 'Reports::Perimeter',
+    foreign_key: 'reports_perimeter_id'
+
+  belongs_to :status,
+    class_name: 'Reports::Status',
+    foreign_key: 'reports_status_id'
+
+  belongs_to :user
+
+  has_one :feedback,
+    class_name: 'Reports::Feedback',
+    foreign_key: :reports_item_id,
+    dependent: :destroy
+
+  has_many :comments,
+    class_name: 'Reports::Comment',
+    foreign_key: :reports_item_id,
+    dependent: :destroy
+
+  has_many :grouped_reports, -> { where.not(group_key: nil) },
+    class_name: 'Reports::Item',
+    foreign_key: :group_key,
+    primary_key: :group_key
+
+  has_many :histories,
+    class_name: 'Reports::ItemHistory',
+    foreign_key: :reports_item_id,
+    dependent: :destroy
 
   has_one :setting, ->(record) { unscoped.where(namespace_id: record.namespace_id) },
     class_name: 'Reports::CategorySetting',
@@ -44,28 +69,32 @@ class Reports::Item < Reports::Base
     primary_key: :reports_category_id
 
   has_many :inventory_categories, through: :category
-  has_many :images, foreign_key: :reports_item_id,
-                    class_name: 'Reports::Image',
-                    dependent: :destroy,
-                    autosave: true
-  has_many :statuses, through: :category
+
+  has_many :images,
+    class_name: 'Reports::Image',
+    foreign_key: :reports_item_id,
+    dependent: :destroy,
+    autosave: true
+
+  has_many :notifications,
+    class_name: 'Reports::Notification',
+    foreign_key: :reports_item_id,
+    dependent: :destroy
+
+  has_many :offensive_flags,
+    class_name: 'Reports::OffensiveFlag',
+    foreign_key: :reports_item_id,
+    dependent: :destroy
+
   has_many :status_categories, through: :category
-  has_many :status_history, foreign_key: :reports_item_id,
-                            class_name: 'Reports::ItemStatusHistory',
-                            dependent: :destroy,
-                            autosave: true
-  has_many :comments, class_name: 'Reports::Comment',
-                     foreign_key: :reports_item_id,
-                     dependent: :destroy
-  has_many :histories, class_name: 'Reports::ItemHistory',
-                       foreign_key: :reports_item_id,
-                       dependent: :destroy
-  has_many :offensive_flags, class_name: 'Reports::OffensiveFlag',
-                             foreign_key: :reports_item_id,
-                             dependent: :destroy
-  has_many :notifications, class_name: 'Reports::Notification',
-                           foreign_key: :reports_item_id,
-                           dependent: :destroy
+
+  has_many :status_history,
+    class_name: 'Reports::ItemStatusHistory',
+    foreign_key: :reports_item_id,
+    dependent: :destroy,
+    autosave: true
+
+  has_many :statuses, through: :category
 
   has_many :custom_field_data, class_name: 'Reports::CustomFieldData',
     foreign_key: :reports_item_id,
@@ -84,6 +113,8 @@ class Reports::Item < Reports::Base
   validate_in_boundary :position
 
   accepts_nested_attributes_for :comments
+
+  enum origin: { panel: 0, app_android: 1, app_ios: 2, app_technical: 3, web: 4 }
 
   def inventory_item_category_id
     inventory_item.try(:inventory_category_id)
@@ -126,30 +157,6 @@ class Reports::Item < Reports::Base
     .create('overdue', 'Relato entrou em atraso, quando estava no status:',
             new: status.entity(only: [:id, :name])
            )
-  end
-
-  def fetch_image_versions(mounted)
-    res = {}
-
-    if mounted.versions.empty?
-      res = mounted.to_s
-    else
-      mounted.versions.each do |name, v|
-        res[name] = fetch_image_versions(v)
-      end
-    end
-
-    res
-  end
-
-  def images_structure
-    images.map do |image|
-      fetch_image_versions(image.image).merge(
-        original: image.url,
-        title: image.title,
-        date: image.date
-      )
-    end
   end
 
   def status_history_for_user
@@ -204,6 +211,10 @@ class Reports::Item < Reports::Base
 
   def related_entities
     Cases::RelatedEntities.new(self)
+  end
+
+  def grouped?
+    group_key.present?
   end
 
   class Entity < Grape::Entity
@@ -280,31 +291,38 @@ class Reports::Item < Reports::Base
     expose :inventory_item_category_id
     expose :created_at
     expose :updated_at
+    expose :group_key
+    expose :grouped?, as: :grouped
 
     private
 
-    def protocol
-      user = options[:user]
-      permissions = UserAbility.for_user(user)
+    def viewer
+      @viewer ||= options[:user]
+    end
 
-      if permissions.can?(:view_private, object) ||
-          permissions.can?(:edit, object) || user.try(:id) == object.user_id
+    def viewer_permissions
+      @viewer_permissions ||= UserAbility.for_user(viewer)
+    end
+
+    def viewer_can_view_full_report?
+      viewer_permissions.can?(:view_private, object) ||
+        viewer_permissions.can?(:edit, object)
+    end
+
+    def protocol
+      if viewer_can_view_full_report? || viewer.try(:id) == object.user_id
         object.protocol
       end
     end
 
     def comments
-      Reports::GetCommentsForUser.new(object, options[:user]).comments
+      Reports::GetCommentsForUser.new(object, viewer).comments
     end
 
     def user
-      user = options[:user]
-      permissions = UserAbility.for_user(user)
-
       options = extract_options_for(:user)
 
-      if permissions.can?(:view_private, object) ||
-          permissions.can?(:edit, object) || user.try(:id) == object.user_id
+      if viewer_can_view_full_report? || viewer.try(:id) == object.user_id
         User::Entity.represent(object.user, options)
       else
         User::Entity.represent(User::Anonymous.new, options)
@@ -313,6 +331,26 @@ class Reports::Item < Reports::Base
 
     def last_notification
       Reports::Notification.last_notification_for(object)
+    end
+
+    def images_structure
+      images =
+        if viewer_can_view_full_report?
+          object.images
+        else
+          object.images.visible
+        end
+
+      images.map do |image|
+        object.fetch_image_versions(image.image).merge(
+          id: image.id,
+          original: image.url,
+          title: image.title,
+          date: image.date,
+          origin: image.origin,
+          visibility: image.visibility
+        )
+      end
     end
   end
 
