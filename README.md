@@ -6,13 +6,13 @@ Sabemos que o manejo de informação é uma das chaves para uma gestão eficient
 
 Esse componente é toda a base do processamento de informação do ZUP, atuando como o ponto final de consumo de todos os componentes envolvidos no sistema, tais como:
 
-* [Painel administrativo WEB](https://git.ntxdev.com.br/zup/zup-painel)
-* [Aplicativo WEB para cidadão](https://git.ntxdev.com.br/zup/zup-web-angular)
-* [Aplicativo ANDROID para cidadão](https://git.ntxdev.com.br/zup/zup-android-cidadao)
-* [Aplicativo ANDROID para uso técnico](https://git.ntxdev.com.br/zup/zup-android-tecnico)
-* [Aplicativo iOS para cidadão](https://git.ntxdev.com.br/zup/zup-ios-cidadao)
+* [Painel administrativo WEB](https://github.com/institutotim/zup-painel)
+* [Aplicativo WEB para cidadão](https://github.com/institutotim/zup-web)
+* [Aplicativo ANDROID para cidadão](https://github.com/institutotim/zup-android-cidadao)
+* [Aplicativo ANDROID para uso técnico](https://github.com/institutotim/zup-android-tecnico)
+* [Aplicativo iOS para cidadão](https://github.com/institutotim/zup-ios-cidadao)
 
-Esse README informa como subir o projeto em ambiente para desenvolvimento. Para informações sobre como fazer o deploy do projeto para produção, leia o [Guia de instalação](http://docs.zup.ntxdev.com.br/site/installation_docker/).
+Esse README informa como subir o projeto em ambiente para desenvolvimento. Para informações sobre como fazer o deploy do projeto para produção, leia o [Guia de instalação](http://zeladoriaurbana.com.br/latest/installation_docker/).
 
 ## Tecnologias utilizadas
 
